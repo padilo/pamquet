@@ -14,7 +14,7 @@ type model struct {
 
 func NewModel() model {
 	return model{
-		timer: timer.NewWithInterval(10*time.Second, 200*time.Millisecond),
+		timer: timer.NewWithInterval(10*time.Second, 51*time.Millisecond),
 	}
 }
 
@@ -41,9 +41,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := fmt.Sprintln(m.timer.View())
+	s := fmt.Sprintln(m.formatTimer())
 	s += "\n"
 	s += "q to exit"
 
 	return s
+}
+
+func (m model) formatTimer() string {
+	t := m.timer.Timeout
+	min := t.Truncate(time.Minute)
+	sec := t - min
+	ms := t - min - sec.Truncate(time.Second)
+	return fmt.Sprintf("%02dm:%02d:%03d",
+		min/time.Minute,
+		sec/time.Second,
+		ms/time.Millisecond,
+	)
 }
