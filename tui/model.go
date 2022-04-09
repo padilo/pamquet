@@ -4,14 +4,39 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type keyMap struct {
+	Q key.Binding
+}
+
+func (k keyMap) ShortHelp() []key.Binding {
+	return []key.Binding{k.Q}
+}
+
+func (k keyMap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		{k.Q},
+	}
+}
+
+var keys = keyMap{
+	Q: key.NewBinding(
+		key.WithKeys("q"),
+		key.WithHelp("q", "to exit"),
+	),
+}
+
 type model struct {
 	timer   timer.Model
 	spinner spinner.Model
+	help    help.Model
+	keys    keyMap
 }
 
 func NewModel() model {
@@ -20,6 +45,8 @@ func NewModel() model {
 	return model{
 		timer:   timer.NewWithInterval(10*time.Second, 51*time.Millisecond),
 		spinner: s,
+		help:    help.New(),
+		keys:    keys,
 	}
 
 }
@@ -53,7 +80,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	s := fmt.Sprintln(m.formatTimer())
 	s += "\n"
-	s += "q to exit"
+	s += m.help.View(m.keys)
 
 	return s
 }
