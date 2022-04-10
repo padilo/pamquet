@@ -14,10 +14,11 @@ import (
 
 type keyMap struct {
 	Q key.Binding
+	P key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Q}
+	return []key.Binding{k.Q, k.P}
 }
 
 func (k keyMap) FullHelp() [][]key.Binding {
@@ -30,6 +31,10 @@ var keys = keyMap{
 	Q: key.NewBinding(
 		key.WithKeys("q"),
 		key.WithHelp("q", "to exit"),
+	),
+	P: key.NewBinding(
+		key.WithKeys("s"),
+		key.WithHelp("s", "to start pomodoro"),
 	),
 }
 
@@ -46,7 +51,6 @@ func NewModel() model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
 	return model{
-		timer:   timer.NewWithInterval(10*time.Second, 51*time.Millisecond),
 		spinner: s,
 		help:    help.New(),
 		keys:    keys,
@@ -55,7 +59,7 @@ func NewModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	return tea.Batch(m.timer.Init(), m.spinner.Tick)
+	return m.spinner.Tick
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -64,13 +68,29 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "q":
 			return m, tea.Quit
+
+		case "s":
+			err := m.app.StartPomodoro()
+			if err != nil {
+				// TODO: popup an error
+				return m, nil
+			}
+			m.timer = timer.NewWithInterval(m.app.PomodoroTime(), 70*time.Millisecond)
+			return m, m.timer.Init()
+
 		}
 	case timer.StartStopMsg, timer.TickMsg:
 		var cmd tea.Cmd
 		m.timer, cmd = m.timer.Update(msg)
 		return m, cmd
+
 	case timer.TimeoutMsg:
-		return m, tea.Quit
+		err := m.app.FinishPomodoro()
+		if err != nil {
+			panic(err)
+		}
+		return m, nil
+
 	case spinner.TickMsg:
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(msg)
@@ -89,14 +109,20 @@ func (m model) View() string {
 }
 
 func (m model) formatTimer() string {
+	var min time.Duration
+	var sec time.Duration
+
+	if m.timer.Timedout() {
+		return "done"
+	}
 	t := m.timer.Timeout
-	min := t.Truncate(time.Minute)
-	sec := t - min
-	ms := t - min - sec.Truncate(time.Second)
-	return fmt.Sprintf("%s %02dm:%02d:%03d",
+	min = t.Truncate(time.Minute)
+	sec = t - min
+	//ms := t - min - sec.Truncate(time.Second)
+
+	return fmt.Sprintf("%s %02d:%02d",
 		m.spinner.View(),
 		min/time.Minute,
 		sec/time.Second,
-		ms/time.Millisecond,
 	)
 }

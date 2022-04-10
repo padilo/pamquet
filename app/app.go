@@ -1,6 +1,8 @@
 package app
 
 import (
+	"time"
+
 	"github.com/padilo/pomaquet/app/pomodoro"
 )
 
@@ -22,4 +24,8 @@ func (ac *App) StartPomodoro() error {
 
 func (a *App) FinishPomodoro() error {
 	return a.currentPomodoro.Finish()
+}
+
+func (ac *App) PomodoroTime() time.Duration {
+	return 10 * time.Second
 }
