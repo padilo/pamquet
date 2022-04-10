@@ -18,7 +18,7 @@ func TestPomodoro(t *testing.T) {
 		p := New()
 
 		err := p.Start()
-		assert.Nil(t, err, "Unexpected error")
+		assert.Nil(t, err, "unexpected error")
 
 		assert.True(t, p.IsRunning(), "pomodoro should be running")
 		assert.False(t, p.IsCompleted(), "pomodoro shouldn't be completed")
@@ -29,9 +29,9 @@ func TestPomodoro(t *testing.T) {
 		p := New()
 
 		err = p.Start()
-		assert.Nil(t, err, "Unexpected error")
+		assert.Nil(t, err, "unexpected error")
 		err = p.Finish()
-		assert.Nil(t, err, "Unexpected error")
+		assert.Nil(t, err, "unexpected error")
 
 		assert.False(t, p.IsRunning(), "pomodoro shouldn't be running")
 		assert.True(t, p.IsCompleted(), "pomodoro should be completed")

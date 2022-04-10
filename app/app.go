@@ -1,8 +1,6 @@
 package app
 
 import (
-	"errors"
-
 	"github.com/padilo/pomaquet/app/pomodoro"
 )
 
@@ -10,18 +8,18 @@ type App struct {
 	currentPomodoro pomodoro.Pomodoro
 }
 
-func (ac *App) Init() {
-	ac.currentPomodoro = pomodoro.New()
+func Init() App {
+	return App{}
 }
 
 func (ac *App) StartPomodoro() error {
-	if ac.currentPomodoro.IsRunning() {
-		return errors.New("A pomodoro is already running")
-	}
-
-	if !ac.currentPomodoro.IsCompleted() {
+	if ac.currentPomodoro.IsCompleted() {
 		ac.currentPomodoro = pomodoro.New()
 	}
 
-	return nil
+	return ac.currentPomodoro.Start()
+}
+
+func (a *App) FinishPomodoro() error {
+	return a.currentPomodoro.Finish()
 }
