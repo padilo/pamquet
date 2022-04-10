@@ -24,7 +24,7 @@ func TestPomodoro(t *testing.T) {
 		assert.False(t, p.IsCompleted(), "pomodoro shouldn't be completed")
 	})
 
-	t.Run("when started should be running and not completed", func(t *testing.T) {
+	t.Run("when finished should be completed and not running", func(t *testing.T) {
 		var err error
 		p := New()
 
@@ -35,5 +35,47 @@ func TestPomodoro(t *testing.T) {
 
 		assert.False(t, p.IsRunning(), "pomodoro shouldn't be running")
 		assert.True(t, p.IsCompleted(), "pomodoro should be completed")
+	})
+
+	t.Run("you can't start the same pomodoro twice", func(t *testing.T) {
+		var err error
+		p := New()
+
+		err = p.Start()
+		assert.Nil(t, err, "unexpected error")
+		err = p.Start()
+		assert.Error(t, err, "expected error 2 starts")
+	})
+
+	t.Run("you can't finish the same pomodoro twice", func(t *testing.T) {
+		var err error
+		p := New()
+
+		err = p.Start()
+		assert.Nil(t, err, "unexpected error")
+		err = p.Finish()
+		assert.Nil(t, err, "unexpected error")
+		err = p.Finish()
+		assert.Error(t, err, "expected error 2 finish")
+	})
+
+	t.Run("you can't start an already finished pomodoro", func(t *testing.T) {
+		var err error
+		p := New()
+
+		err = p.Start()
+		assert.Nil(t, err, "unexpected error")
+		err = p.Finish()
+		assert.Nil(t, err, "unexpected error")
+		err = p.Start()
+		assert.Error(t, err, "expected error 2 starts")
+	})
+
+	t.Run("you can't finish a pomodoro that is not running", func(t *testing.T) {
+		var err error
+		p := New()
+
+		err = p.Finish()
+		assert.Error(t, err, "expected error finished a non running pomodoro")
 	})
 }
