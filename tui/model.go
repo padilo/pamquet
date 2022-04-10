@@ -15,15 +15,18 @@ import (
 type keyMap struct {
 	Q key.Binding
 	P key.Binding
+	S key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Q, k.P}
+	return []key.Binding{k.Q, k.P, k.S}
 }
 
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Q},
+		{k.P},
+		{k.S},
 	}
 }
 
@@ -33,8 +36,12 @@ var keys = keyMap{
 		key.WithHelp("q", "to exit"),
 	),
 	P: key.NewBinding(
+		key.WithKeys("p"),
+		key.WithHelp("p", "to start pomodoro"),
+	),
+	S: key.NewBinding(
 		key.WithKeys("s"),
-		key.WithHelp("s", "to start pomodoro"),
+		key.WithHelp("s", "to finish pomodoro"),
 	),
 }
 
@@ -65,11 +72,11 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "q":
+		switch {
+		case key.Matches(msg, m.keys.Q):
 			return m, tea.Quit
 
-		case "s":
+		case key.Matches(msg, m.keys.P):
 			err := m.app.StartPomodoro()
 			if err != nil {
 				// TODO: popup an error
@@ -77,6 +84,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.timer = timer.NewWithInterval(m.app.PomodoroTime(), 70*time.Millisecond)
 			return m, m.timer.Init()
+
+		case key.Matches(msg, m.keys.S):
+			m.app.CancelPomodoro()
+			m.timer.Stop()
+
+			return m, nil
 
 		}
 	case timer.StartStopMsg, timer.TickMsg:

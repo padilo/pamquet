@@ -29,3 +29,7 @@ func (a *App) FinishPomodoro() error {
 func (ac *App) PomodoroTime() time.Duration {
 	return 10 * time.Second
 }
+
+func (ac *App) CancelPomodoro() {
+	
+}
