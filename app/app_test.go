@@ -35,16 +35,62 @@ func TestApp(t *testing.T) {
 		assert.Nil(t, err, "unexpected error")
 		err = a.FinishPomodoro()
 		assert.Nil(t, err, "unexpected error")
-
 		err = a.StartPomodoro()
 		assert.Nil(t, err, "unexpected error")
 	})
 
-	t.Run("you can't finish a pomodoro that isn't started'", func(t *testing.T) {
+	t.Run("you can't finish a pomodoro twice", func(t *testing.T) {
+		var err error
+		a := Init()
+
+		err = a.StartPomodoro()
+		assert.Nil(t, err, "unexpected error")
+		err = a.FinishPomodoro()
+		assert.Nil(t, err, "unexpected error")
+		err = a.FinishPomodoro()
+		assert.Error(t, err, "error pomodoro can't be finished twice")
+	})
+
+	t.Run("you can't finish a pomodoro that isn't started", func(t *testing.T) {
 		var err error
 		a := Init()
 
 		err = a.FinishPomodoro()
-		assert.Error(t, err, "error pomodoro isn't finished")
+		assert.Error(t, err, "error pomodoro isn't started")
 	})
+
+	t.Run("a cancelled pomodoro can't be finished", func(t *testing.T) {
+		var err error
+		a := Init()
+
+		err = a.StartPomodoro()
+		assert.Nil(t, err, "unexpected error")
+
+		err = a.CancelPomodoro()
+		assert.Nil(t, err, "unexpected error")
+
+		err = a.FinishPomodoro()
+		assert.Error(t, err, "canceled can't be finished")
+	})
+
+	t.Run("you can't cancel a pomodoro that isn't started", func(t *testing.T) {
+		var err error
+		a := Init()
+
+		err = a.CancelPomodoro()
+		assert.Error(t, err, "error pomodoro isn't started")
+	})
+
+	t.Run("you can't cancel a pomodoro twice", func(t *testing.T) {
+		var err error
+		a := Init()
+
+		err = a.StartPomodoro()
+		assert.Nil(t, err, "unexpected error")
+		err = a.CancelPomodoro()
+		assert.Nil(t, err, "unexpected error")
+		err = a.CancelPomodoro()
+		assert.Error(t, err, "error pomodoro can't be cancelled twice")
+	})
+
 }

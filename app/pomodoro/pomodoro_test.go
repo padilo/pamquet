@@ -78,4 +78,5 @@ func TestPomodoro(t *testing.T) {
 		err = p.Finish()
 		assert.Error(t, err, "expected error finished a non running pomodoro")
 	})
+
 }

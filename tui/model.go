@@ -86,10 +86,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.timer.Init()
 
 		case key.Matches(msg, m.keys.S):
-			m.app.CancelPomodoro()
-			m.timer.Stop()
+			err := m.app.CancelPomodoro()
+			if err != nil {
+				// TODO: popup an error
+				return m, nil
+			}
 
-			return m, nil
+			// In theory this should be a Stop, but it doesn't work
+			return m, m.timer.Toggle()
 
 		}
 	case timer.StartStopMsg, timer.TickMsg:

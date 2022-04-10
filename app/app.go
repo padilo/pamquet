@@ -14,22 +14,22 @@ func Init() App {
 	return App{}
 }
 
-func (ac *App) StartPomodoro() error {
-	if ac.currentPomodoro.IsCompleted() {
-		ac.currentPomodoro = pomodoro.New()
+func (a *App) StartPomodoro() error {
+	if a.currentPomodoro.IsCompleted() {
+		a.currentPomodoro = pomodoro.New()
 	}
 
-	return ac.currentPomodoro.Start()
+	return a.currentPomodoro.Start()
 }
 
 func (a *App) FinishPomodoro() error {
 	return a.currentPomodoro.Finish()
 }
 
-func (ac *App) PomodoroTime() time.Duration {
+func (a *App) PomodoroTime() time.Duration {
 	return 10 * time.Second
 }
 
-func (ac *App) CancelPomodoro() {
-	
+func (a *App) CancelPomodoro() error {
+	return a.currentPomodoro.Finish()
 }
