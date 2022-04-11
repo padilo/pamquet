@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/app"
+	"github.com/padilo/pomaquet/cmd"
 )
 
 type keyMap struct {
@@ -52,7 +52,7 @@ type model struct {
 	help    help.Model
 	keys    keyMap
 
-	app app.App
+	app cmd.App
 }
 
 func NewModel() model {
