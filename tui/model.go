@@ -62,6 +62,7 @@ func NewModel() model {
 		spinner: s,
 		help:    help.New(),
 		keys:    keys,
+		app:     cmd.Init(),
 	}
 
 }
@@ -78,25 +79,24 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.S):
-			err := m.app.StartPomodoro()
-			if err != nil {
-				// TODO: popup an error
-				return m, nil
-			}
-			m.timer = timer.NewWithInterval(m.app.PomodoroTime(), 70*time.Millisecond)
-			return m, m.timer.Init()
+			return m, m.app.StartPomodoro()
 
 		case key.Matches(msg, m.keys.C):
-			err := m.app.CancelPomodoro()
-			if err != nil {
-				// TODO: popup an error
-				return m, nil
-			}
-
-			// In theory this should be a Stop, but it doesn't work
-			return m, m.timer.Toggle()
+			return m, m.app.CancelPomodoro()
 
 		}
+	case cmd.MsgPomodoroCancelled:
+		//println("c")
+		return m, m.timer.Toggle()
+
+	case cmd.MsgPomodoroStarted:
+		m.timer = timer.NewWithInterval(m.app.PomodoroTime(), 70*time.Millisecond)
+		return m, m.timer.Init()
+
+	case cmd.MsgPomodoroFinished:
+		println("s")
+		return m, nil
+
 	case timer.StartStopMsg, timer.TickMsg:
 		var cmd tea.Cmd
 		m.timer, cmd = m.timer.Update(msg)
@@ -105,17 +105,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case timer.TimeoutMsg:
-		err := m.app.FinishPomodoro()
-		if err != nil {
-			panic(err)
-		}
-		return m, nil
+		return m, m.app.FinishPomodoro()
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd
 		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd
 	}
+
+	fmt.Sprintf("Unhandled event %t\n", msg)
 
 	return m, nil
 }

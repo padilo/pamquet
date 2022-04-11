@@ -8,40 +8,51 @@ import (
 )
 
 type App struct {
-	currentPomodoro pomodoro.Pomodoro
+	currentPomodoro *pomodoro.Pomodoro
 }
 
 func Init() App {
-	return App{}
+	p := pomodoro.New(10 * time.Second)
+	return App{
+		currentPomodoro: &p,
+	}
 }
 
 func (a *App) StartPomodoro() tea.Cmd {
 	return func() tea.Msg {
 		if a.currentPomodoro.IsCompleted() {
-			a.currentPomodoro = pomodoro.New()
+			a.currentPomodoro = a.newPomodoro()
 		}
-
-		return a.tryDo(a.currentPomodoro.Start())
+		err := a.currentPomodoro.Start()
+		return a.tryDo(err, MsgPomodoroStarted{})
 	}
 }
 
-func (a *App) tryDo(err error) tea.Msg {
+func (a *App) newPomodoro() *pomodoro.Pomodoro {
+	p := pomodoro.New(10 * time.Second)
+	return &p
+}
+
+func (a *App) tryDo(err error, success tea.Msg) tea.Msg {
 	if err != nil {
 		return MsgError{Err: err}
 	}
-	return nil
+	return success
 }
 
 func (a *App) FinishPomodoro() tea.Cmd {
 	return func() tea.Msg {
-		return a.tryDo(a.currentPomodoro.Finish())
+		return a.tryDo(a.currentPomodoro.Finish(), MsgPomodoroFinished{})
+	}
+}
+
+func (a *App) CancelPomodoro() tea.Cmd {
+	return func() tea.Msg {
+		ret := a.tryDo(a.currentPomodoro.Finish(), MsgPomodoroCancelled{})
+		return ret
 	}
 }
 
 func (a *App) PomodoroTime() time.Duration {
-	return 10 * time.Second
-}
-
-func (a *App) CancelPomodoro() tea.Cmd {
-	return a.FinishPomodoro()
+	return a.currentPomodoro.Duration()
 }

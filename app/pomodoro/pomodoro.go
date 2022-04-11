@@ -1,16 +1,21 @@
 package pomodoro
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type Pomodoro struct {
 	completed bool
 	running   bool
+	duration  time.Duration
 }
 
-func New() Pomodoro {
+func New(duration time.Duration) Pomodoro {
 	return Pomodoro{
 		completed: false,
 		running:   false,
+		duration:  duration,
 	}
 }
 
@@ -45,4 +50,8 @@ func (p *Pomodoro) Finish() error {
 
 func (p *Pomodoro) IsCompleted() bool {
 	return p.completed
+}
+
+func (p *Pomodoro) Duration() time.Duration {
+	return p.duration
 }
