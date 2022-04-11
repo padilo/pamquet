@@ -91,11 +91,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.timer.Toggle()
 
 	case pomodoro.MsgPomodoroStarted:
-		m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 70*time.Millisecond)
+		m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
 		return m, m.timer.Init()
 
 	case pomodoro.MsgPomodoroFinished:
-		return m, nil
+		return m, m.pomodoroContext.StartPomodoro()
+
+	case pomodoro.MsgError:
+		panic(msg.Err)
 
 	case timer.StartStopMsg, timer.TickMsg:
 		var cmd tea.Cmd
@@ -132,13 +135,13 @@ func (m model) pomodoroLine(pomodoro *pomodoro.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04")
 	icon := guessIcon(pomodoro.Class())
 
-	return timeStr + " " + icon + " " + m.formatDescription(pomodoro) + "\n"
+	return timeStr + " " + icon + " - " + m.formatDescription(pomodoro) + "\n"
 }
 
 func guessIcon(class pomodoro.Class) string {
 	switch class.(type) {
 	case pomodoro.Work:
-		return "🍅"
+		return "⛏️ "
 
 	case pomodoro.Break:
 		return "☕"
@@ -154,25 +157,25 @@ func (m model) formatDescription(pomodoro *pomodoro.Pomodoro) string {
 	var min time.Duration
 	var sec time.Duration
 
-	class := pomodoro.Class()
-
 	if pomodoro.IsCompleted() {
-		return fmt.Sprintf("%s completed at %s", class, pomodoro.EndTime().Format("15:04"))
+		return fmt.Sprintf("✅ %s", pomodoro.EndTime().Format("15:04"))
 	}
 	if pomodoro.IsCancelled() {
-		return fmt.Sprintf("%s cancelled at %s", class, pomodoro.EndTime().Format("15:04"))
+		return fmt.Sprintf("❌ %s", pomodoro.EndTime().Format("15:04"))
 	}
 
 	t := m.timer.Timeout
 	min = t.Truncate(time.Minute)
 	sec = t - min
+	ms := t - min - sec.Truncate(time.Second)
 
 	spinnerStr := m.spinner.View()
 
-	return fmt.Sprintf("%s %s %02d:%02d",
-		class,
+	return fmt.Sprintf("%s  ⏱️  %02d:%02d.%03d",
+		//class,
 		spinnerStr,
 		min/time.Minute,
 		sec/time.Second,
+		ms/time.Millisecond,
 	)
 }
