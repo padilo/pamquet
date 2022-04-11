@@ -7,40 +7,58 @@ import (
 
 type Class interface {
 	String() string
+	Duration() time.Duration
 }
-type Work struct{}
-type Break struct{}
-type LongBreak struct{}
+type Work struct {
+	duration time.Duration
+}
+type Break struct {
+	duration time.Duration
+}
+
+type LongBreak struct {
+	duration time.Duration
+}
 
 func (w Work) String() string {
 	return "Work"
 }
 
-func (w Break) String() string {
+func (b Break) String() string {
 	return "Break"
 }
 
-func (w LongBreak) String() string {
+func (l LongBreak) String() string {
 	return "Long Break"
+}
+
+func (w Work) Duration() time.Duration {
+	return w.duration
+}
+
+func (b Break) Duration() time.Duration {
+	return b.duration
+}
+
+func (l LongBreak) Duration() time.Duration {
+	return l.duration
 }
 
 type Pomodoro struct {
 	completed bool
 	running   bool
-	duration  time.Duration
 	startTime time.Time
 	endTime   time.Time
 	class     Class
 	cancelled bool
 }
 
-func NewPomodoro(duration time.Duration) Pomodoro {
+func NewPomodoro(class Class) Pomodoro {
 	return Pomodoro{
 		completed: false,
 		running:   false,
 		cancelled: false,
-		duration:  duration,
-		class:     Work{},
+		class:     class,
 	}
 }
 
@@ -72,6 +90,7 @@ func (p *Pomodoro) finish() error {
 	}
 	p.completed = true
 	p.running = false
+	p.endTime = time.Now()
 
 	return nil
 }
@@ -89,6 +108,7 @@ func (p *Pomodoro) cancel() error {
 	p.completed = false
 	p.running = false
 	p.cancelled = true
+	p.endTime = time.Now()
 
 	return nil
 }
@@ -102,7 +122,7 @@ func (p *Pomodoro) IsCompleted() bool {
 }
 
 func (p *Pomodoro) Duration() time.Duration {
-	return p.duration
+	return p.class.Duration()
 }
 
 func (p *Pomodoro) StartTime() time.Time {

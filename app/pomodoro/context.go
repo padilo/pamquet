@@ -9,12 +9,19 @@ import (
 type Context struct {
 	pomodoro []*Pomodoro
 	settings settings
+	finished int
 }
 
 func (a *Context) newPomodoro() *Pomodoro {
-	p := NewPomodoro(a.settings.WorkTime)
+	p := NewPomodoro(a.guessClass())
 	a.pomodoro = append(a.pomodoro, &p)
 	return &p
+}
+
+func (a *Context) guessClass() Class {
+	i := a.finished % len(a.settings.orderClasses)
+
+	return a.settings.orderClasses[i]
 }
 
 func (a *Context) tryDo(err error, success tea.Msg) tea.Msg {
@@ -49,7 +56,12 @@ func (a *Context) FinishPomodoro() tea.Cmd {
 				Err: errors.New("there isn't a pomodoro"),
 			}
 		}
-		return a.tryDo(pomodoro.finish(), MsgPomodoroFinished{})
+		err := pomodoro.finish()
+
+		if err == nil {
+			a.finished++
+		}
+		return a.tryDo(err, MsgPomodoroFinished{})
 	}
 }
 
