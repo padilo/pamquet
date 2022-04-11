@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/cmd"
+	"github.com/padilo/pomaquet/cmds"
 )
 
 type keyMap struct {
@@ -52,7 +52,7 @@ type model struct {
 	help    help.Model
 	keys    keyMap
 
-	app cmd.App
+	app cmds.App
 }
 
 func NewModel() model {
@@ -62,7 +62,7 @@ func NewModel() model {
 		spinner: s,
 		help:    help.New(),
 		keys:    keys,
-		app:     cmd.Init(),
+		app:     cmds.Init(),
 	}
 
 }
@@ -85,15 +85,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.app.CancelPomodoro()
 
 		}
-	case cmd.MsgPomodoroCancelled:
-		//println("c")
+	case cmds.MsgPomodoroCancelled:
 		return m, m.timer.Toggle()
 
-	case cmd.MsgPomodoroStarted:
+	case cmds.MsgPomodoroStarted:
 		m.timer = timer.NewWithInterval(m.app.PomodoroTime(), 70*time.Millisecond)
 		return m, m.timer.Init()
 
-	case cmd.MsgPomodoroFinished:
+	case cmds.MsgPomodoroFinished:
 		println("s")
 		return m, nil
 
@@ -113,8 +112,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	}
 
-	fmt.Sprintf("Unhandled event %t\n", msg)
-
 	return m, nil
 }
 
@@ -133,6 +130,10 @@ func (m model) formatTimer() string {
 	if m.timer.Timedout() {
 		return "done"
 	}
+	if !m.timer.Running() {
+		return "cancelled"
+	}
+
 	t := m.timer.Timeout
 	min = t.Truncate(time.Minute)
 	sec = t - min

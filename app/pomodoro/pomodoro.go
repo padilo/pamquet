@@ -48,6 +48,16 @@ func (p *Pomodoro) Finish() error {
 	return nil
 }
 
+func (p *Pomodoro) Cancel() error {
+	if !p.running {
+		return errors.New("pomodoro is not running, cannot mark cancel")
+	}
+	p.completed = false
+	p.running = false
+
+	return nil
+}
+
 func (p *Pomodoro) IsCompleted() bool {
 	return p.completed
 }

@@ -1,4 +1,4 @@
-package cmd
+package cmds
 
 type MsgError struct {
 	Err error

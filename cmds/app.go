@@ -1,4 +1,4 @@
-package cmd
+package cmds
 
 import (
 	"time"
@@ -48,7 +48,7 @@ func (a *App) FinishPomodoro() tea.Cmd {
 
 func (a *App) CancelPomodoro() tea.Cmd {
 	return func() tea.Msg {
-		ret := a.tryDo(a.currentPomodoro.Finish(), MsgPomodoroCancelled{})
+		ret := a.tryDo(a.currentPomodoro.Cancel(), MsgPomodoroCancelled{})
 		return ret
 	}
 }
