@@ -19,7 +19,7 @@ func New(duration time.Duration) Pomodoro {
 	}
 }
 
-func (p *Pomodoro) Start() error {
+func (p *Pomodoro) start() error {
 	if p.completed {
 		return errors.New("pomodoro can't be started if it's already completed")
 	}
@@ -31,11 +31,7 @@ func (p *Pomodoro) Start() error {
 	return nil
 }
 
-func (p *Pomodoro) IsRunning() bool {
-	return p.running
-}
-
-func (p *Pomodoro) Finish() error {
+func (p *Pomodoro) finish() error {
 	if p.completed {
 		return errors.New("pomodoro has already finish")
 	}
@@ -48,7 +44,7 @@ func (p *Pomodoro) Finish() error {
 	return nil
 }
 
-func (p *Pomodoro) Cancel() error {
+func (p *Pomodoro) cancel() error {
 	if !p.running {
 		return errors.New("pomodoro is not running, cannot mark cancel")
 	}
@@ -56,6 +52,10 @@ func (p *Pomodoro) Cancel() error {
 	p.running = false
 
 	return nil
+}
+
+func (p *Pomodoro) IsRunning() bool {
+	return p.running
 }
 
 func (p *Pomodoro) IsCompleted() bool {

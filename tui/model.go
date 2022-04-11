@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/cmds"
+	"github.com/padilo/pomaquet/app/pomodoro"
 )
 
 type keyMap struct {
@@ -52,17 +52,17 @@ type model struct {
 	help    help.Model
 	keys    keyMap
 
-	app cmds.App
+	app pomodoro.Context
 }
 
-func NewModel() model {
+func newModel() model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
 	return model{
 		spinner: s,
 		help:    help.New(),
 		keys:    keys,
-		app:     cmds.Init(),
+		app:     pomodoro.Init(),
 	}
 
 }
@@ -85,14 +85,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.app.CancelPomodoro()
 
 		}
-	case cmds.MsgPomodoroCancelled:
+	case pomodoro.MsgPomodoroCancelled:
 		return m, m.timer.Toggle()
 
-	case cmds.MsgPomodoroStarted:
-		m.timer = timer.NewWithInterval(m.app.PomodoroTime(), 70*time.Millisecond)
+	case pomodoro.MsgPomodoroStarted:
+		m.timer = timer.NewWithInterval(m.app.CurrentPomodoro().Duration(), 70*time.Millisecond)
 		return m, m.timer.Init()
 
-	case cmds.MsgPomodoroFinished:
+	case pomodoro.MsgPomodoroFinished:
 		return m, nil
 
 	case timer.StartStopMsg, timer.TickMsg:

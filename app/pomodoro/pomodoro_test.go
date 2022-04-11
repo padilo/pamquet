@@ -20,7 +20,7 @@ func TestPomodoro(t *testing.T) {
 	t.Run("when started should be running and not completed", func(t *testing.T) {
 		p := New(0)
 
-		err := p.Start()
+		err := p.start()
 		assert.Nil(t, err, "unexpected error")
 
 		assert.True(t, p.IsRunning(), "pomodoro should be running")
@@ -31,9 +31,9 @@ func TestPomodoro(t *testing.T) {
 		var err error
 		p := New(duration)
 
-		err = p.Start()
+		err = p.start()
 		assert.Nil(t, err, "unexpected error")
-		err = p.Finish()
+		err = p.finish()
 		assert.Nil(t, err, "unexpected error")
 
 		assert.False(t, p.IsRunning(), "pomodoro shouldn't be running")
@@ -44,9 +44,9 @@ func TestPomodoro(t *testing.T) {
 		var err error
 		p := New(duration)
 
-		err = p.Start()
+		err = p.start()
 		assert.Nil(t, err, "unexpected error")
-		err = p.Start()
+		err = p.start()
 		assert.Error(t, err, "expected error 2 starts")
 	})
 
@@ -54,11 +54,11 @@ func TestPomodoro(t *testing.T) {
 		var err error
 		p := New(duration)
 
-		err = p.Start()
+		err = p.start()
 		assert.Nil(t, err, "unexpected error")
-		err = p.Finish()
+		err = p.finish()
 		assert.Nil(t, err, "unexpected error")
-		err = p.Finish()
+		err = p.finish()
 		assert.Error(t, err, "expected error 2 finish")
 	})
 
@@ -66,11 +66,11 @@ func TestPomodoro(t *testing.T) {
 		var err error
 		p := New(duration)
 
-		err = p.Start()
+		err = p.start()
 		assert.Nil(t, err, "unexpected error")
-		err = p.Finish()
+		err = p.finish()
 		assert.Nil(t, err, "unexpected error")
-		err = p.Start()
+		err = p.start()
 		assert.Error(t, err, "expected error 2 starts")
 	})
 
@@ -78,7 +78,7 @@ func TestPomodoro(t *testing.T) {
 		var err error
 		p := New(duration)
 
-		err = p.Finish()
+		err = p.finish()
 		assert.Error(t, err, "expected error finished a non running pomodoro")
 	})
 
