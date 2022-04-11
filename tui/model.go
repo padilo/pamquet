@@ -93,7 +93,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.timer.Init()
 
 	case cmds.MsgPomodoroFinished:
-		println("s")
 		return m, nil
 
 	case timer.StartStopMsg, timer.TickMsg:
@@ -116,11 +115,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := fmt.Sprintln(m.formatTimer())
-	s += "\n"
-	s += m.help.View(m.keys)
+	return m.pomodoroLine()
+}
 
-	return s
+func (m model) pomodoroLine() string {
+	spinnerStr := m.spinner.View()
+	timeStr := time.Now().Format("15:04")
+	timerStr := fmt.Sprintln(m.formatTimer())
+	helpStr := m.help.View(m.keys)
+
+	return spinnerStr + " " + timeStr + " " + timerStr + "\n" + helpStr
 }
 
 func (m model) formatTimer() string {
@@ -137,10 +141,8 @@ func (m model) formatTimer() string {
 	t := m.timer.Timeout
 	min = t.Truncate(time.Minute)
 	sec = t - min
-	//ms := t - min - sec.Truncate(time.Second)
 
-	return fmt.Sprintf("%s %02d:%02d",
-		m.spinner.View(),
+	return fmt.Sprintf("%02d:%02d",
 		min/time.Minute,
 		sec/time.Second,
 	)
