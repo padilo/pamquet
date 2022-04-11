@@ -11,14 +11,14 @@ func TestPomodoro(t *testing.T) {
 	const duration = 10 * time.Second
 
 	t.Run("initial state", func(t *testing.T) {
-		p := New(duration)
+		p := NewPomodoro(duration)
 
 		assert.False(t, p.IsRunning(), "pomodoro shouldn't be running")
 		assert.False(t, p.IsCompleted(), "pomodoro shouldn't be completed")
 	})
 
 	t.Run("when started should be running and not completed", func(t *testing.T) {
-		p := New(0)
+		p := NewPomodoro(0)
 
 		err := p.start()
 		assert.Nil(t, err, "unexpected error")
@@ -29,7 +29,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("when finished should be completed and not running", func(t *testing.T) {
 		var err error
-		p := New(duration)
+		p := NewPomodoro(duration)
 
 		err = p.start()
 		assert.Nil(t, err, "unexpected error")
@@ -42,7 +42,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't start the same pomodoro twice", func(t *testing.T) {
 		var err error
-		p := New(duration)
+		p := NewPomodoro(duration)
 
 		err = p.start()
 		assert.Nil(t, err, "unexpected error")
@@ -52,7 +52,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't finish the same pomodoro twice", func(t *testing.T) {
 		var err error
-		p := New(duration)
+		p := NewPomodoro(duration)
 
 		err = p.start()
 		assert.Nil(t, err, "unexpected error")
@@ -64,7 +64,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't start an already finished pomodoro", func(t *testing.T) {
 		var err error
-		p := New(duration)
+		p := NewPomodoro(duration)
 
 		err = p.start()
 		assert.Nil(t, err, "unexpected error")
@@ -76,7 +76,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't finish a pomodoro that is not running", func(t *testing.T) {
 		var err error
-		p := New(duration)
+		p := NewPomodoro(duration)
 
 		err = p.finish()
 		assert.Error(t, err, "expected error finished a non running pomodoro")
@@ -86,10 +86,10 @@ func TestPomodoro(t *testing.T) {
 		expectedDuration := duration
 		expectedDuration2 := duration * 2
 
-		p := New(expectedDuration)
+		p := NewPomodoro(expectedDuration)
 		assert.Equal(t, expectedDuration, p.Duration())
 
-		p = New(expectedDuration2)
+		p = NewPomodoro(expectedDuration2)
 		assert.Equal(t, expectedDuration2, p.Duration())
 	})
 

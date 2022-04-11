@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -52,17 +53,18 @@ type model struct {
 	help    help.Model
 	keys    keyMap
 
-	pomodoroContext pomodoro.Context
+	pomodoroContext *pomodoro.Context
 }
 
 func newModel() model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
+	pomodoroContext := pomodoro.Init()
 	return model{
 		spinner:         s,
 		help:            help.New(),
 		keys:            keys,
-		pomodoroContext: pomodoro.Init(),
+		pomodoroContext: &pomodoroContext,
 	}
 
 }
@@ -115,34 +117,61 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	return m.pomodoroLine()
-}
+	pomodoros := m.pomodoroContext.Pomodoros()
+	pomodorosStrArr := make([]string, len(pomodoros))
 
-func (m model) pomodoroLine() string {
-	spinnerStr := m.spinner.View()
-	timeStr := time.Now().Format("15:04")
-	timerStr := fmt.Sprintln(m.formatTimer())
+	for i := 0; i < len(pomodoros); i++ {
+		pomodorosStrArr[i] = m.pomodoroLine(pomodoros[i])
+	}
+	pomodorosStr := strings.Join(pomodorosStrArr, "")
 	helpStr := m.help.View(m.keys)
-
-	return spinnerStr + " " + timeStr + " " + timerStr + "\n" + helpStr
+	return pomodorosStr + helpStr
 }
 
-func (m model) formatTimer() string {
+func (m model) pomodoroLine(pomodoro *pomodoro.Pomodoro) string {
+	timeStr := pomodoro.StartTime().Format("15:04")
+	icon := guessIcon(pomodoro.Class())
+
+	return timeStr + " " + icon + " " + m.formatDescription(pomodoro) + "\n"
+}
+
+func guessIcon(class pomodoro.Class) string {
+	switch class.(type) {
+	case pomodoro.Work:
+		return "🍅"
+
+	case pomodoro.Break:
+		return "☕"
+
+	case pomodoro.LongBreak:
+		return "🍺"
+	}
+
+	return "?"
+}
+
+func (m model) formatDescription(pomodoro *pomodoro.Pomodoro) string {
 	var min time.Duration
 	var sec time.Duration
 
-	if m.timer.Timedout() {
-		return "done"
+	class := pomodoro.Class()
+
+	if pomodoro.IsCompleted() {
+		return fmt.Sprintf("%s completed at %s", class, pomodoro.EndTime().Format("15:04"))
 	}
-	if !m.timer.Running() {
-		return "cancelled"
+	if pomodoro.IsCancelled() {
+		return fmt.Sprintf("%s cancelled at %s", class, pomodoro.EndTime().Format("15:04"))
 	}
 
 	t := m.timer.Timeout
 	min = t.Truncate(time.Minute)
 	sec = t - min
 
-	return fmt.Sprintf("%02d:%02d",
+	spinnerStr := m.spinner.View()
+
+	return fmt.Sprintf("%s %s %02d:%02d",
+		class,
+		spinnerStr,
 		min/time.Minute,
 		sec/time.Second,
 	)
