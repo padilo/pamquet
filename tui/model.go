@@ -52,17 +52,17 @@ type model struct {
 	help    help.Model
 	keys    keyMap
 
-	app pomodoro.Context
+	pomodoroContext pomodoro.Context
 }
 
 func newModel() model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
 	return model{
-		spinner: s,
-		help:    help.New(),
-		keys:    keys,
-		app:     pomodoro.Init(),
+		spinner:         s,
+		help:            help.New(),
+		keys:            keys,
+		pomodoroContext: pomodoro.Init(),
 	}
 
 }
@@ -79,17 +79,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.S):
-			return m, m.app.StartPomodoro()
+			return m, m.pomodoroContext.StartPomodoro()
 
 		case key.Matches(msg, m.keys.C):
-			return m, m.app.CancelPomodoro()
+			return m, m.pomodoroContext.CancelPomodoro()
 
 		}
 	case pomodoro.MsgPomodoroCancelled:
 		return m, m.timer.Toggle()
 
 	case pomodoro.MsgPomodoroStarted:
-		m.timer = timer.NewWithInterval(m.app.CurrentPomodoro().Duration(), 70*time.Millisecond)
+		m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 70*time.Millisecond)
 		return m, m.timer.Init()
 
 	case pomodoro.MsgPomodoroFinished:
@@ -103,7 +103,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case timer.TimeoutMsg:
-		return m, m.app.FinishPomodoro()
+		return m, m.pomodoroContext.FinishPomodoro()
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd
