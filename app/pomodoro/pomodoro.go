@@ -5,45 +5,6 @@ import (
 	"time"
 )
 
-type Class interface {
-	String() string
-	Duration() time.Duration
-}
-type Work struct {
-	duration time.Duration
-}
-type Break struct {
-	duration time.Duration
-}
-
-type LongBreak struct {
-	duration time.Duration
-}
-
-func (w Work) String() string {
-	return "Work"
-}
-
-func (b Break) String() string {
-	return "Break"
-}
-
-func (l LongBreak) String() string {
-	return "Long Break"
-}
-
-func (w Work) Duration() time.Duration {
-	return w.duration
-}
-
-func (b Break) Duration() time.Duration {
-	return b.duration
-}
-
-func (l LongBreak) Duration() time.Duration {
-	return l.duration
-}
-
 type Pomodoro struct {
 	completed bool
 	running   bool
@@ -51,14 +12,16 @@ type Pomodoro struct {
 	endTime   time.Time
 	class     Class
 	cancelled bool
+	duration  time.Duration
 }
 
-func NewPomodoro(class Class) Pomodoro {
+func NewPomodoro(class Class, duration time.Duration) Pomodoro {
 	return Pomodoro{
 		completed: false,
 		running:   false,
 		cancelled: false,
 		class:     class,
+		duration:  duration,
 	}
 }
 
@@ -122,14 +85,14 @@ func (p *Pomodoro) IsCompleted() bool {
 }
 
 func (p *Pomodoro) Duration() time.Duration {
-	return p.class.Duration()
+	return p.duration
 }
 
 func (p *Pomodoro) StartTime() time.Time {
 	return p.startTime
 }
 
-func (p *Pomodoro) Class() Class {
+func (p Pomodoro) Class() Class {
 	return p.class
 }
 

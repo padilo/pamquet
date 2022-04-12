@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/padilo/pomaquet/app/pomodoro"
 )
 
@@ -47,11 +48,16 @@ var keys = keyMap{
 	),
 }
 
+type styles struct {
+	classText lipgloss.Style
+}
+
 type model struct {
 	timer   timer.Model
 	spinner spinner.Model
 	help    help.Model
 	keys    keyMap
+	styles
 
 	pomodoroContext *pomodoro.Context
 }
@@ -65,6 +71,9 @@ func newModel() model {
 		help:            help.New(),
 		keys:            keys,
 		pomodoroContext: &pomodoroContext,
+		styles: styles{
+			classText: lipgloss.NewStyle().Italic(true),
+		},
 	}
 
 }
@@ -121,47 +130,37 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	pomodoros := m.pomodoroContext.Pomodoros()
-	pomodorosStrArr := make([]string, len(pomodoros))
+	pomodoroStringLines := make([]string, len(pomodoros))
 
 	for i := 0; i < len(pomodoros); i++ {
-		pomodorosStrArr[i] = m.pomodoroLine(pomodoros[i])
+		pomodoroStringLines[i] = m.pomodoroLine(pomodoros[i])
 	}
-	pomodorosStr := strings.Join(pomodorosStrArr, "")
+	pomodorosStr := strings.Join(pomodoroStringLines, "")
 	helpStr := m.help.View(m.keys)
 	return pomodorosStr + helpStr
 }
 
-func (m model) pomodoroLine(pomodoro *pomodoro.Pomodoro) string {
+func (m model) pomodoroLine(pomodoro pomodoro.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04")
-	icon := guessIcon(pomodoro.Class())
+	icon := pomodoro.Class().Icon()
+	classText := m.styles.classText.
+		Render(pomodoro.Class().String())
 
-	return timeStr + " " + icon + " - " + m.formatDescription(pomodoro) + "\n"
+	return timeStr + " " + icon + "[" + classText + "]" + " - " + m.formatDescription(pomodoro) + "\n"
 }
 
-func guessIcon(class pomodoro.Class) string {
-	switch class.(type) {
-	case pomodoro.Work:
-		return "⛏️ "
-
-	case pomodoro.Break:
-		return "☕"
-
-	case pomodoro.LongBreak:
-		return "🍺"
-	}
-
-	return "?"
-}
-
-func (m model) formatDescription(pomodoro *pomodoro.Pomodoro) string {
+func (m model) formatDescription(pomodoro pomodoro.Pomodoro) string {
 	var min time.Duration
 	var sec time.Duration
 
-	if pomodoro.IsCompleted() {
-		return fmt.Sprintf("✅ %s", pomodoro.EndTime().Format("15:04"))
-	}
-	if pomodoro.IsCancelled() {
-		return fmt.Sprintf("❌ %s", pomodoro.EndTime().Format("15:04"))
+	if pomodoro.IsCompleted() || pomodoro.IsCancelled() {
+		var icon string
+		if pomodoro.IsCompleted() {
+			icon = fmt.Sprintf("✅ ")
+		} else {
+			icon = fmt.Sprintf("❌ ")
+		}
+		return fmt.Sprintf("%sended at %s", icon, pomodoro.EndTime().Format("15:04"))
 	}
 
 	t := m.timer.Timeout
@@ -172,7 +171,7 @@ func (m model) formatDescription(pomodoro *pomodoro.Pomodoro) string {
 	spinnerStr := m.spinner.View()
 
 	return fmt.Sprintf("%s  ⏱️  %02d:%02d.%03d",
-		//class,
+		//class.go,
 		spinnerStr,
 		min/time.Minute,
 		sec/time.Second,

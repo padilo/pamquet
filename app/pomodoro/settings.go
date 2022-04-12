@@ -3,27 +3,22 @@ package pomodoro
 import "time"
 
 type settings struct {
-	WorkTime      time.Duration
-	BreakTime     time.Duration
-	LongBreakTime time.Duration
+	durationClassMapping map[Class]time.Duration
+	orderClasses         []Class
+}
 
-	orderClasses []Class
+func (s settings) Time(class Class) time.Duration {
+	return s.durationClassMapping[class]
 }
 
 func NewSettings() settings {
-	workP := Work{
-		duration: 10 * time.Second,
-	}
-	breakP := Break{
-		duration: 5 * time.Second,
-	}
-	longBreakP := LongBreak{
-		duration: 7 * time.Second,
-	}
 	return settings{
-		WorkTime:      workP.duration,
-		BreakTime:     breakP.duration,
-		LongBreakTime: longBreakP.duration,
-		orderClasses:  []Class{workP, breakP, workP, breakP, workP, breakP, workP, longBreakP},
+		durationClassMapping: map[Class]time.Duration{
+			Work:      10 * time.Second,
+			Break:     5 * time.Second,
+			LongBreak: 7 * time.Second,
+		},
+		//orderClasses: []Class{Work, Break, Work, Break, Work, Break, Work, LongBreak},
+		orderClasses: []Class{Work, Break, LongBreak},
 	}
 }

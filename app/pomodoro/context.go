@@ -7,15 +7,16 @@ import (
 )
 
 type Context struct {
-	pomodoro []*Pomodoro
+	pomodoro []Pomodoro
 	settings settings
 	finished int
 }
 
 func (a *Context) newPomodoro() *Pomodoro {
-	p := NewPomodoro(a.guessClass())
-	a.pomodoro = append(a.pomodoro, &p)
-	return &p
+	class := a.guessClass()
+	p := NewPomodoro(class, a.settings.Time(class))
+	a.pomodoro = append(a.pomodoro, p)
+	return a.CurrentPomodoro()
 }
 
 func (a *Context) guessClass() Class {
@@ -85,9 +86,9 @@ func (a *Context) CurrentPomodoro() *Pomodoro {
 		return nil
 	}
 
-	return a.pomodoro[l-1]
+	return &a.pomodoro[l-1]
 }
 
-func (a *Context) Pomodoros() []*Pomodoro {
+func (a *Context) Pomodoros() []Pomodoro {
 	return a.pomodoro
 }
