@@ -8,21 +8,21 @@ import (
 
 type Context struct {
 	pomodoro []Pomodoro
-	settings settings
+	Settings settings
 	finished int
 }
 
 func (a *Context) newPomodoro() *Pomodoro {
 	class := a.guessClass()
-	p := NewPomodoro(class, a.settings.Time(class))
+	p := NewPomodoro(class, a.Settings.Time(class))
 	a.pomodoro = append(a.pomodoro, p)
 	return a.CurrentPomodoro()
 }
 
 func (a *Context) guessClass() Class {
-	i := a.finished % len(a.settings.orderClasses)
+	i := a.finished % len(a.Settings.orderClasses)
 
-	return a.settings.orderClasses[i]
+	return a.Settings.orderClasses[i]
 }
 
 func (a *Context) tryDo(err error, success tea.Msg) tea.Msg {
@@ -34,7 +34,7 @@ func (a *Context) tryDo(err error, success tea.Msg) tea.Msg {
 
 func Init() Context {
 	return Context{
-		settings: NewSettings(),
+		Settings: NewSettings(),
 	}
 }
 

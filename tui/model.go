@@ -48,8 +48,18 @@ var keys = keyMap{
 	),
 }
 
+var (
+	styleClassText = lipgloss.NewStyle().Italic(true)
+
+	stylePomodoroHistory  = lipgloss.NewStyle().Align(lipgloss.Top)
+	styleHelp             = lipgloss.NewStyle().Align(lipgloss.Bottom)
+	stylePomodoroSettings = lipgloss.NewStyle().PaddingLeft(1)
+)
+
 type styles struct {
-	classText lipgloss.Style
+	classText       lipgloss.Style
+	pomodoroHistory lipgloss.Style
+	help            lipgloss.Style
 }
 
 type model struct {
@@ -57,9 +67,10 @@ type model struct {
 	spinner spinner.Model
 	help    help.Model
 	keys    keyMap
-	styles
 
 	pomodoroContext pomodoro.Context
+	height          int
+	width           int
 }
 
 func newModel() model {
@@ -71,9 +82,6 @@ func newModel() model {
 		help:            help.New(),
 		keys:            keys,
 		pomodoroContext: pomodoroContext,
-		styles: styles{
-			classText: lipgloss.NewStyle().Italic(true),
-		},
 	}
 
 }
@@ -90,23 +98,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.S):
-			err := m.pomodoroContext.StartPomodoro()
-			if err != nil {
-				panic(err)
-			}
-
-			m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
-			return m, m.timer.Init()
+			return m.StartPomodoro()
 
 		case key.Matches(msg, m.keys.C):
 			err := m.pomodoroContext.CancelPomodoro()
 			if err != nil {
 				panic(err)
 			}
-
 			return m, m.timer.Toggle()
-
 		}
+	case tea.WindowSizeMsg:
+		m.height = msg.Height
+		m.width = msg.Width
+		return m, nil
 
 	case timer.StartStopMsg, timer.TickMsg:
 		var cmd tea.Cmd
@@ -116,14 +120,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case timer.TimeoutMsg:
-		m.pomodoroContext.FinishPomodoro()
-		err := m.pomodoroContext.StartPomodoro()
+		err := m.pomodoroContext.FinishPomodoro()
 		if err != nil {
 			panic(err)
 		}
-
-		m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
-		return m, m.timer.Init()
+		return m.StartPomodoro()
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd
@@ -134,6 +135,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m model) StartPomodoro() (tea.Model, tea.Cmd) {
+	err := m.pomodoroContext.StartPomodoro()
+	if err != nil {
+		panic(err)
+	}
+	m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
+	return m, m.timer.Init()
+}
+
 func (m model) View() string {
 	pomodoros := m.pomodoroContext.Pomodoros()
 	pomodoroStringLines := make([]string, len(pomodoros))
@@ -141,16 +151,20 @@ func (m model) View() string {
 	for i := 0; i < len(pomodoros); i++ {
 		pomodoroStringLines[i] = m.pomodoroLine(pomodoros[i])
 	}
-	pomodorosStr := strings.Join(pomodoroStringLines, "")
-	helpStr := m.help.View(m.keys)
-	return pomodorosStr + helpStr
+
+	leftBlank := lipgloss.NewStyle().Width(m.width / 2).Render("")
+	pomodorosView := stylePomodoroHistory.Height(m.height / 2).Width(60).Render(strings.Join(pomodoroStringLines, ""))
+	statusView := stylePomodoroSettings.Render(m.pomodoroStatusView())
+	completePomodorosView := lipgloss.JoinHorizontal(lipgloss.Left, pomodorosView, statusView)
+	helpStr := styleHelp.Render(m.help.View(m.keys))
+	pomodoroWindow := lipgloss.JoinVertical(lipgloss.Left, completePomodorosView, helpStr)
+	return lipgloss.JoinHorizontal(lipgloss.Left, leftBlank, pomodoroWindow)
 }
 
 func (m model) pomodoroLine(pomodoro pomodoro.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04:05")
 	icon := pomodoro.Class().Icon()
-	classText := m.styles.classText.
-		Render(pomodoro.Class().String())
+	classText := styleClassText.Render(pomodoro.Class().String())
 
 	return timeStr + " " + icon + "[" + classText + "]" + " - " + m.formatDescription(pomodoro) + "\n"
 }
@@ -182,5 +196,26 @@ func (m model) formatDescription(pomodoro pomodoro.Pomodoro) string {
 		min/time.Minute,
 		sec/time.Second,
 		ms/time.Millisecond,
+	)
+}
+
+func (m model) pomodoroStatusView() string {
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		m.classStatusView(pomodoro.Work),
+		m.classStatusView(pomodoro.Break),
+		m.classStatusView(pomodoro.LongBreak),
+	)
+}
+
+func (m model) classStatusView(class pomodoro.Class) string {
+	return lipgloss.JoinHorizontal(
+		lipgloss.Left,
+		strings.Join([]string{
+			class.String(),
+			m.pomodoroContext.Settings.Time(class).String(),
+		},
+			" ",
+		),
 	)
 }
