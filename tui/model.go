@@ -59,7 +59,7 @@ type model struct {
 	keys    keyMap
 	styles
 
-	pomodoroContext *pomodoro.Context
+	pomodoroContext pomodoro.Context
 }
 
 func newModel() model {
@@ -70,7 +70,7 @@ func newModel() model {
 		spinner:         s,
 		help:            help.New(),
 		keys:            keys,
-		pomodoroContext: &pomodoroContext,
+		pomodoroContext: pomodoroContext,
 		styles: styles{
 			classText: lipgloss.NewStyle().Italic(true),
 		},
@@ -90,24 +90,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.S):
-			return m, m.pomodoroContext.StartPomodoro()
+			err := m.pomodoroContext.StartPomodoro()
+			if err != nil {
+				panic(err)
+			}
+
+			m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
+			return m, m.timer.Init()
 
 		case key.Matches(msg, m.keys.C):
-			return m, m.pomodoroContext.CancelPomodoro()
+			err := m.pomodoroContext.CancelPomodoro()
+			if err != nil {
+				panic(err)
+			}
+
+			return m, m.timer.Toggle()
 
 		}
-	case pomodoro.MsgPomodoroCancelled:
-		return m, m.timer.Toggle()
-
-	case pomodoro.MsgPomodoroStarted:
-		m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
-		return m, m.timer.Init()
-
-	case pomodoro.MsgPomodoroFinished:
-		return m, m.pomodoroContext.StartPomodoro()
-
-	case pomodoro.MsgError:
-		panic(msg.Err)
 
 	case timer.StartStopMsg, timer.TickMsg:
 		var cmd tea.Cmd
@@ -117,7 +116,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case timer.TimeoutMsg:
-		return m, m.pomodoroContext.FinishPomodoro()
+		m.pomodoroContext.FinishPomodoro()
+		err := m.pomodoroContext.StartPomodoro()
+		if err != nil {
+			panic(err)
+		}
+
+		m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
+		return m, m.timer.Init()
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd

@@ -38,45 +38,34 @@ func Init() Context {
 	}
 }
 
-func (a *Context) StartPomodoro() tea.Cmd {
-	return func() tea.Msg {
-		currentPomodoro := a.CurrentPomodoro()
-		if currentPomodoro == nil || currentPomodoro.IsCompleted() || currentPomodoro.IsCancelled() {
-			currentPomodoro = a.newPomodoro()
-		}
-		err := currentPomodoro.start()
-		return a.tryDo(err, MsgPomodoroStarted{})
+func (a *Context) StartPomodoro() error {
+	currentPomodoro := a.CurrentPomodoro()
+	if currentPomodoro == nil || currentPomodoro.IsCompleted() || currentPomodoro.IsCancelled() {
+		currentPomodoro = a.newPomodoro()
 	}
+	return currentPomodoro.start()
 }
 
-func (a *Context) FinishPomodoro() tea.Cmd {
-	return func() tea.Msg {
-		pomodoro := a.CurrentPomodoro()
-		if pomodoro == nil {
-			return MsgError{
-				Err: errors.New("there isn't a pomodoro"),
-			}
-		}
-		err := pomodoro.finish()
-
-		if err == nil {
-			a.finished++
-		}
-		return a.tryDo(err, MsgPomodoroFinished{})
+func (a *Context) FinishPomodoro() error {
+	pomodoro := a.CurrentPomodoro()
+	if pomodoro == nil {
+		return errors.New("there isn't a pomodoro")
 	}
+	err := pomodoro.finish()
+
+	if err == nil {
+		a.finished++
+	}
+
+	return err
 }
 
-func (a *Context) CancelPomodoro() tea.Cmd {
-	return func() tea.Msg {
-		pomodoro := a.CurrentPomodoro()
-		if pomodoro == nil {
-			return MsgError{
-				Err: errors.New("there isn't a pomodoro"),
-			}
-		}
-		ret := a.tryDo(pomodoro.cancel(), MsgPomodoroCancelled{})
-		return ret
+func (a *Context) CancelPomodoro() error {
+	pomodoro := a.CurrentPomodoro()
+	if pomodoro == nil {
+		return errors.New("there isn't a pomodoro")
 	}
+	return pomodoro.cancel()
 }
 
 func (a *Context) CurrentPomodoro() *Pomodoro {
