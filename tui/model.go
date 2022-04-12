@@ -141,7 +141,7 @@ func (m model) View() string {
 }
 
 func (m model) pomodoroLine(pomodoro pomodoro.Pomodoro) string {
-	timeStr := pomodoro.StartTime().Format("15:04")
+	timeStr := pomodoro.StartTime().Format("15:04:05")
 	icon := pomodoro.Class().Icon()
 	classText := m.styles.classText.
 		Render(pomodoro.Class().String())
@@ -160,7 +160,7 @@ func (m model) formatDescription(pomodoro pomodoro.Pomodoro) string {
 		} else {
 			icon = fmt.Sprintf("❌ ")
 		}
-		return fmt.Sprintf("%sended at %s", icon, pomodoro.EndTime().Format("15:04"))
+		return fmt.Sprintf("%sended at %s", icon, pomodoro.EndTime().Format("15:04:05"))
 	}
 
 	t := m.timer.Timeout
