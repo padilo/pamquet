@@ -22,7 +22,7 @@ type styles struct {
 	help            lipgloss.Style
 }
 
-func (m model) View() string {
+func (m Model) View() string {
 	pomodoroData := m.pomodoroContext.Pomodoros()
 	pomodoroStr := make([]string, len(pomodoroData))
 
@@ -36,7 +36,7 @@ func (m model) View() string {
 	return lipgloss.JoinHorizontal(lipgloss.Left, pomodoroWindow)
 }
 
-func (m model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {
+func (m Model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04:05")
 	icon := pomodoro.Class().Icon()
 	classText := styleClassText.Render(pomodoro.Class().String())
@@ -44,7 +44,7 @@ func (m model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {
 	return timeStr + " " + icon + "[" + classText + "]" + " - " + m.pomodoroDescriptionView(pomodoro) + "\n"
 }
 
-func (m model) pomodoroDescriptionView(pomodoro pomodoro.Pomodoro) string {
+func (m Model) pomodoroDescriptionView(pomodoro pomodoro.Pomodoro) string {
 	var min time.Duration
 	var sec time.Duration
 

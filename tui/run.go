@@ -1,16 +1,16 @@
-package pomodoro
+package tui
 
 import (
 	"fmt"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/tui/pomodoro"
+	"github.com/padilo/pomaquet/tui/window"
 )
 
 func Run() {
 	p := tea.NewProgram(
-		pomodoro.NewModel(),
+		window.NewModel(),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)
