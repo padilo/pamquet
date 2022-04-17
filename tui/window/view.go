@@ -56,18 +56,37 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		cmds = m.updateModels(msg)
 
-		m.updateLeft(messages.DimensionChangeMsg{
+		leftMsg := messages.DimensionChangeMsg{
 			Dimension:  dim.Left,
 			ScreenSize: dim.Screen,
-		})
-		m.updateRight(messages.DimensionChangeMsg{
+		}
+		rightMsg := messages.DimensionChangeMsg{
 			Dimension:  dim.Right,
 			ScreenSize: dim.Screen,
-		})
-	case messages.PushModel:
+		}
+		var cmd tea.Cmd
+		m.crudModel, cmd = m.crudModel.Update(leftMsg)
+		cmds = append(cmds, cmd)
+		m.taskModel, cmd = m.taskModel.Update(leftMsg)
+		cmds = append(cmds, cmd)
+		m.pomodoroModel, cmd = m.pomodoroModel.Update(rightMsg)
+		cmds = append(cmds, cmd)
+
+	case messages.SwitchToTaskCrudMsg:
 		m.leftWindow = CrudTask
-		// Dummy just to force repaint
-		m.updateLeft("42")
+
+	case messages.SwitchToTaskMsg:
+		m.leftWindow = Task
+
+	case messages.CrudOkMsg, messages.CrudCancelMsg:
+		var cmd tea.Cmd
+		m.taskModel, cmd = m.taskModel.Update(msg)
+		cmds = append(cmds, cmd)
+
+	case messages.SetTaskMsg:
+		var cmd tea.Cmd
+		m.crudModel, cmd = m.crudModel.Update(msg)
+		cmds = append(cmds, cmd)
 
 	default:
 		cmds = m.updateModels(msg)

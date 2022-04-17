@@ -9,15 +9,16 @@ import (
 )
 
 type keyMap struct {
-	Up   key.Binding
-	Down key.Binding
-	E    key.Binding
-	N    key.Binding
-	D    key.Binding
+	Up    key.Binding
+	Down  key.Binding
+	E     key.Binding
+	N     key.Binding
+	D     key.Binding
+	SPACE key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Up, k.Down, k.E, k.N, k.D}
+	return []key.Binding{k.Up, k.Down, k.E, k.N, k.D, k.SPACE}
 }
 
 func (k keyMap) FullHelp() [][]key.Binding {
@@ -27,6 +28,7 @@ func (k keyMap) FullHelp() [][]key.Binding {
 		{k.E},
 		{k.N},
 		{k.D},
+		{k.SPACE},
 	}
 }
 
@@ -42,7 +44,6 @@ var keys = keyMap{
 	E: key.NewBinding(
 		key.WithKeys("e"),
 		key.WithHelp("e", "edit task"),
-		key.WithDisabled(),
 	),
 	N: key.NewBinding(
 		key.WithKeys("n"),
@@ -51,9 +52,21 @@ var keys = keyMap{
 	D: key.NewBinding(
 		key.WithKeys("d"),
 		key.WithHelp("d", "del task"),
-		key.WithDisabled(),
+	),
+	SPACE: key.NewBinding(
+		key.WithKeys(" "),
+		key.WithHelp("space", "done task"),
 	),
 }
+
+type Mode int
+
+const (
+	None Mode = iota
+	Create
+	Update
+	Delete
+)
 
 type Model struct {
 	context   task.Context
@@ -61,6 +74,7 @@ type Model struct {
 	dimension messages.Dimension
 	help      help.Model
 	keys      keyMap
+	mode      Mode
 }
 
 func NewModel() Model {
@@ -69,6 +83,7 @@ func NewModel() Model {
 		selected: 0,
 		keys:     keys,
 		help:     help.New(),
+		mode:     None,
 	}
 }
 
@@ -90,12 +105,36 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selected++
 			}
 		case key.Matches(msg, m.keys.N):
-			return m, func() tea.Msg {
-				return messages.PushModel{}
+			m.mode = Create
+			return m, messages.SwitchToTaskCrud
+		case key.Matches(msg, m.keys.E):
+			m.mode = Update
+			return m, tea.Batch(messages.SwitchToTaskCrud, messages.SetTask(m.context.TaskList[m.selected]))
+		case key.Matches(msg, m.keys.D):
+			m.context.RemoveTask(m.selected)
+			if m.selected+1 > len(m.context.TaskList) {
+				m.selected--
 			}
+			return m, nil
+		case key.Matches(msg, m.keys.SPACE):
+			m.context.SetDone(m.selected)
 		}
 	case messages.DimensionChangeMsg:
 		m.dimension = msg.Dimension
+	case messages.CrudCancelMsg:
+		m.mode = None
+	case messages.CrudOkMsg:
+		switch m.mode {
+		case Create:
+			m.context.AddTask(msg.Task.Title)
+		case Update:
+			m.context.SetTitle(m.selected, msg.Task.Title)
+
+		default:
+			// TODO: better error control
+			println("WTF")
+		}
+		m.mode = None
 	}
 	return m, nil
 }

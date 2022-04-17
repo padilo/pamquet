@@ -25,6 +25,18 @@ func (c *Context) GetTasksNames() []string {
 	})
 }
 
+func (c *Context) SetDone(selected int) {
+	c.TaskList[selected].Done = !c.TaskList[selected].Done
+}
+
+func (c *Context) RemoveTask(selected int) {
+	c.TaskList = append(c.TaskList[:selected], c.TaskList[selected+1:]...)
+}
+
+func (c *Context) SetTitle(selected int, title string) {
+	c.TaskList[selected].Title = title
+}
+
 func collect[T any, U any](arrayItems []T, m func(T) U) []U {
 	ret := make([]U, len(arrayItems))
 
