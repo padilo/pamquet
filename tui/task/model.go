@@ -6,16 +6,18 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/padilo/pomaquet/app/task"
+	"github.com/padilo/pomaquet/tui/messages"
 )
 
 type Model struct {
-	context  task.Context
-	selected int
+	context   task.Context
+	selected  int
+	dimension messages.Dimension
 }
 
 var (
 	styleTask         = lipgloss.NewStyle().Background(lipgloss.Color("0"))
-	styleSelectedTask = lipgloss.NewStyle().Background(lipgloss.Color("5")).Italic(true)
+	styleSelectedTask = lipgloss.NewStyle().Background(lipgloss.Color("5"))
 )
 
 func NewModel() Model {
@@ -45,6 +47,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.selected++
 			}
 		}
+	case messages.DimensionChangeMsg:
+		m.dimension = msg.Dimension
 	}
 	return m, nil
 }
@@ -71,5 +75,6 @@ func (m Model) View() string {
 
 	}
 
-	return lipgloss.JoinVertical(lipgloss.Left, taskLines...)
+	text := lipgloss.JoinVertical(lipgloss.Left, taskLines...)
+	return lipgloss.Place(m.dimension.Width(), m.dimension.Height(), lipgloss.Left, lipgloss.Top, text)
 }

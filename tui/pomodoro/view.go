@@ -33,7 +33,8 @@ func (m Model) View() string {
 	pomodoroView := stylePomodoroHistory.Render(strings.Join(pomodoroStr, ""))
 	helpView := styleHelp.Render(m.help.View(m.keys))
 	pomodoroWindow := lipgloss.JoinVertical(lipgloss.Left, pomodoroView, helpView)
-	return lipgloss.JoinHorizontal(lipgloss.Left, pomodoroWindow)
+	text := lipgloss.JoinHorizontal(lipgloss.Left, pomodoroWindow)
+	return lipgloss.Place(m.dimension.Width(), m.dimension.Height(), lipgloss.Left, lipgloss.Top, text)
 }
 
 func (m Model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {

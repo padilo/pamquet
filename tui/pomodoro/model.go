@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/padilo/pomaquet/app/pomodoro"
+	"github.com/padilo/pomaquet/tui/messages"
 )
 
 type keyMap struct {
@@ -54,6 +55,7 @@ type Model struct {
 	pomodoroContext pomodoro.Context
 	height          int
 	width           int
+	dimension       messages.Dimension
 }
 
 func NewModel() Model {
@@ -115,6 +117,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			m.spinner, cmd = m.spinner.Update(msg)
 			return m, cmd
 		}
+
+	case messages.DimensionChangeMsg:
+		m.dimension = msg.Dimension
 	}
 
 	return m, nil
