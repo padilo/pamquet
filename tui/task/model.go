@@ -47,7 +47,6 @@ var keys = keyMap{
 	N: key.NewBinding(
 		key.WithKeys("n"),
 		key.WithHelp("n", "new task"),
-		key.WithDisabled(),
 	),
 	D: key.NewBinding(
 		key.WithKeys("d"),
@@ -77,7 +76,7 @@ func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -89,6 +88,10 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Down):
 			if m.selected < len(m.context.TaskList)-1 {
 				m.selected++
+			}
+		case key.Matches(msg, m.keys.N):
+			return m, func() tea.Msg {
+				return messages.PushModel{}
 			}
 		}
 	case messages.DimensionChangeMsg:

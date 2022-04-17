@@ -1,8 +1,11 @@
 package messages
 
+import tea "github.com/charmbracelet/bubbletea"
+
 type Dimensions struct {
-	Pomodoro Dimension
-	Task     Dimension
+	Right  Dimension
+	Left   Dimension
+	Screen Dimension
 }
 
 type Dimension struct {
@@ -21,5 +24,11 @@ func (d Dimension) Height() int {
 }
 
 type DimensionChangeMsg struct {
-	Dimension Dimension
+	Dimension  Dimension
+	ScreenSize Dimension
+}
+
+type PushModel struct {
+	Name  string
+	model tea.Model
 }
