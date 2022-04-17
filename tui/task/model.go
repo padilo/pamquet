@@ -69,6 +69,7 @@ func NewModel() Model {
 		context:  task.Init(),
 		selected: 0,
 		keys:     keys,
+		help:     help.New(),
 	}
 }
 

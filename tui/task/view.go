@@ -35,6 +35,9 @@ func (m Model) View() string {
 
 	}
 
+	helpView := styleHelp.Render(m.help.View(m.keys))
+
 	text := lipgloss.JoinVertical(lipgloss.Left, taskLines...)
+	text = lipgloss.JoinVertical(lipgloss.Left, text, helpView)
 	return lipgloss.Place(m.dimension.Width(), m.dimension.Height(), lipgloss.Left, lipgloss.Top, text)
 }
