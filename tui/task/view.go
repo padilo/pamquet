@@ -9,6 +9,8 @@ import (
 var (
 	styleTask         = lipgloss.NewStyle().Background(lipgloss.Color("0"))
 	styleSelectedTask = lipgloss.NewStyle().Background(lipgloss.Color("5"))
+
+	styleHelp = lipgloss.NewStyle().Align(lipgloss.Bottom)
 )
 
 func (m Model) View() string {
