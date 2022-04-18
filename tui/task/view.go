@@ -9,6 +9,7 @@ import (
 var (
 	styleTask         = lipgloss.NewStyle().Background(lipgloss.Color("0"))
 	styleSelectedTask = lipgloss.NewStyle().Background(lipgloss.Color("5"))
+	styleCheckedTask  = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
 
 	styleHelp = lipgloss.NewStyle().Align(lipgloss.Bottom)
 )
@@ -27,12 +28,11 @@ func (m Model) View() string {
 			style = styleTask
 		}
 		if t.Done {
-			checked = "x"
+			checked = "✓"
 			style = style.Copy().Strikethrough(true)
 		}
 
-		taskLines[i] = style.Render(fmt.Sprintf("[%s] %s", checked, t.Title))
-
+		taskLines[i] = fmt.Sprintf("[%s] ", styleCheckedTask.Render(checked)) + style.Render(t.Title)
 	}
 
 	helpView := styleHelp.Render(m.help.View(m.keys))
