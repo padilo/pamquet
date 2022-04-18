@@ -1,6 +1,7 @@
 package pomodoro
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -106,6 +107,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case timer.TimeoutMsg:
 		if msg.ID == m.timer.ID() {
 			err := m.pomodoroContext.FinishPomodoro()
+			if err != nil {
+				panic(err)
+			}
+			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", m.pomodoroContext.CurrentPomodoro().Class().Icon(), m.pomodoroContext.CurrentPomodoro().Class().String()), "")
 			if err != nil {
 				panic(err)
 			}
