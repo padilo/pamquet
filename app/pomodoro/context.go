@@ -2,8 +2,6 @@ package pomodoro
 
 import (
 	"errors"
-
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Context struct {
@@ -23,13 +21,6 @@ func (a *Context) guessClass() Class {
 	i := a.finished % len(a.Settings.orderClasses)
 
 	return a.Settings.orderClasses[i]
-}
-
-func (a *Context) tryDo(err error, success tea.Msg) tea.Msg {
-	if err != nil {
-		return MsgError{Err: err}
-	}
-	return success
 }
 
 func Init() Context {

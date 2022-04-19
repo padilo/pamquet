@@ -42,12 +42,6 @@ func (p *Pomodoro) start() error {
 }
 
 func (p *Pomodoro) finish() error {
-	if p.completed {
-		return errors.New("pomodoro has already finish")
-	}
-	if p.cancelled {
-		return errors.New("pomodoro is cancelled, can't finish in this state")
-	}
 	if !p.running {
 		return errors.New("pomodoro is not running, cannot mark as finished")
 	}
@@ -61,12 +55,6 @@ func (p *Pomodoro) finish() error {
 func (p *Pomodoro) cancel() error {
 	if !p.running {
 		return errors.New("pomodoro is not running, cannot mark cancel")
-	}
-	if p.cancelled {
-		return errors.New("pomodoro was already cancelled")
-	}
-	if p.completed {
-		return errors.New("pomodoro was already completed")
 	}
 	p.completed = false
 	p.running = false

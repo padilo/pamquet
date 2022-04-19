@@ -93,4 +93,27 @@ func TestPomodoro(t *testing.T) {
 		assert.Equal(t, expectedDuration2, p.Duration())
 	})
 
+	t.Run("you can't cancel an already finished pomodoro", func(t *testing.T) {
+		var err error
+		p := NewPomodoro(Work, duration)
+
+		err = p.start()
+		assert.Nil(t, err, "unexpected error")
+		err = p.finish()
+		assert.Nil(t, err, "unexpected error")
+		err = p.cancel()
+		assert.Error(t, err, "expected error 2 cancel")
+	})
+
+	t.Run("you can't start an already cancelled pomodoro", func(t *testing.T) {
+		var err error
+		p := NewPomodoro(Work, duration)
+
+		err = p.start()
+		assert.Nil(t, err, "unexpected error")
+		err = p.cancel()
+		assert.Nil(t, err, "unexpected error")
+		err = p.start()
+		assert.Error(t, err, "expected error 2 starts")
+	})
 }
