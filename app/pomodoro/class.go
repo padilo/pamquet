@@ -10,11 +10,11 @@ const (
 
 var classesMap = map[Class][]string{
 	Work: {
-		"Work......",
+		"Work",
 		"⛏️ ",
 	},
 	Break: {
-		"Break.....",
+		"Break",
 		"☕",
 	},
 	LongBreak: {

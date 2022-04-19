@@ -10,17 +10,10 @@ import (
 )
 
 var (
-	styleClassText = lipgloss.NewStyle().Italic(true)
-
+	styleClassText       = lipgloss.NewStyle().Width(10).Italic(true)
 	stylePomodoroHistory = lipgloss.NewStyle().Width(60).Align(lipgloss.Top)
 	styleHelp            = lipgloss.NewStyle().Align(lipgloss.Bottom)
 )
-
-type styles struct {
-	classText       lipgloss.Style
-	pomodoroHistory lipgloss.Style
-	help            lipgloss.Style
-}
 
 func (m Model) View() string {
 	pomodoroData := m.pomodoroContext.Pomodoros()
@@ -42,7 +35,7 @@ func (m Model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {
 	icon := pomodoro.Class().Icon()
 	classText := styleClassText.Render(pomodoro.Class().String())
 
-	return timeStr + " " + icon + "[" + classText + "]" + " - " + m.pomodoroDescriptionView(pomodoro) + "\n"
+	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoro))
 }
 
 func (m Model) pomodoroDescriptionView(pomodoro pomodoro.Pomodoro) string {

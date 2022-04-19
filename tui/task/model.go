@@ -99,7 +99,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.selected > 0 {
 				m.selected--
 			}
-
 		case key.Matches(msg, m.keys.Down):
 			if m.selected < len(m.context.TaskList)-1 {
 				m.selected++
@@ -119,6 +118,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.SPACE):
 			m.context.SetDone(m.selected)
 		}
+
 	case messages.DimensionChangeMsg:
 		m.dimension = msg.Dimension
 	case messages.CrudCancelMsg:
