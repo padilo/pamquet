@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/padilo/pomaquet/pkg/app/pomodoro"
+	"github.com/padilo/pomaquet/pkg/app/pomodoro/model"
 )
 
 var (
@@ -30,7 +30,7 @@ func (m Model) View() string {
 	return lipgloss.Place(m.dimension.Width(), m.dimension.Height(), lipgloss.Left, lipgloss.Top, pomodoroWindow)
 }
 
-func (m Model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {
+func (m Model) pomodoroLineView(pomodoro model.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04:05")
 	icon := pomodoro.Class().Icon()
 	classText := styleClassText.Render(pomodoro.Class().String())
@@ -38,7 +38,7 @@ func (m Model) pomodoroLineView(pomodoro pomodoro.Pomodoro) string {
 	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoro))
 }
 
-func (m Model) pomodoroDescriptionView(pomodoro pomodoro.Pomodoro) string {
+func (m Model) pomodoroDescriptionView(pomodoro model.Pomodoro) string {
 	var min time.Duration
 	var sec time.Duration
 
