@@ -4,8 +4,8 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/padilo/pomaquet/app/task"
-	"github.com/padilo/pomaquet/tui/messages"
+	"github.com/padilo/pomaquet/pkg/app/task"
+	"github.com/padilo/pomaquet/pkg/tui/messages"
 )
 
 type Model struct {

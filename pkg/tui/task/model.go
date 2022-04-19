@@ -4,8 +4,8 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/app/task"
-	"github.com/padilo/pomaquet/tui/messages"
+	"github.com/padilo/pomaquet/pkg/app/task"
+	"github.com/padilo/pomaquet/pkg/tui/messages"
 )
 
 type keyMap struct {

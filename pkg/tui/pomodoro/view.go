@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/padilo/pomaquet/app/pomodoro"
+	"github.com/padilo/pomaquet/pkg/app/pomodoro"
 )
 
 var (

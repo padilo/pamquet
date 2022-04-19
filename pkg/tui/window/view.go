@@ -3,10 +3,10 @@ package window
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/padilo/pomaquet/tui/messages"
-	"github.com/padilo/pomaquet/tui/pomodoro"
-	"github.com/padilo/pomaquet/tui/task"
-	"github.com/padilo/pomaquet/tui/task/crud"
+	"github.com/padilo/pomaquet/pkg/tui/messages"
+	"github.com/padilo/pomaquet/pkg/tui/pomodoro"
+	"github.com/padilo/pomaquet/pkg/tui/task"
+	"github.com/padilo/pomaquet/pkg/tui/task/crud"
 )
 
 type LeftWindow int64

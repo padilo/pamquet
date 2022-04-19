@@ -2,7 +2,7 @@ package messages
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/app/task"
+	"github.com/padilo/pomaquet/pkg/app/task"
 )
 
 type Dimensions struct {
