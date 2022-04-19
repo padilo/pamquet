@@ -9,8 +9,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/app/pomodoro"
-	"github.com/padilo/pomaquet/tui/messages"
+	"github.com/padilo/pomaquet/pkg/app/pomodoro"
+	"github.com/padilo/pomaquet/pkg/tui/messages"
 )
 
 type keyMap struct {

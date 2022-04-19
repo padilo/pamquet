@@ -5,7 +5,7 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/tui/window"
+	"github.com/padilo/pomaquet/pkg/tui/window"
 )
 
 func Run() {
