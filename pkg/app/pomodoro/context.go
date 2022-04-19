@@ -2,30 +2,43 @@ package pomodoro
 
 import (
 	"errors"
+
+	"github.com/padilo/pomaquet/pkg/app/pomodoro/model"
+	"github.com/padilo/pomaquet/pkg/storage"
 )
 
 type Context struct {
-	pomodoro []Pomodoro
-	Settings settings
+	pomodoro []model.Pomodoro
+	Settings model.Settings
 	finished int
 }
 
-func (a *Context) newPomodoro() *Pomodoro {
+func (a *Context) newPomodoro() *model.Pomodoro {
 	class := a.guessClass()
-	p := NewPomodoro(class, a.Settings.Time(class))
+	p := model.NewPomodoro(class, a.Settings.Time(class))
 	a.pomodoro = append(a.pomodoro, p)
 	return a.CurrentPomodoro()
 }
 
-func (a *Context) guessClass() Class {
-	i := a.finished % len(a.Settings.orderClasses)
+func (a *Context) guessClass() model.Class {
+	i := a.finished % len(a.Settings.OrderClasses)
 
-	return a.Settings.orderClasses[i]
+	return a.Settings.OrderClasses[i]
+}
+
+func InitDb(settingsStorage storage.SettingsStorage) Context {
+	settings := settingsStorage.Get()
+
+	defer settingsStorage.Save(settings)
+
+	return Context{
+		Settings: settings,
+	}
 }
 
 func Init() Context {
 	return Context{
-		Settings: NewSettings(),
+		Settings: model.NewSettings(),
 	}
 }
 
@@ -34,7 +47,8 @@ func (a *Context) StartPomodoro() error {
 	if currentPomodoro == nil || currentPomodoro.IsCompleted() || currentPomodoro.IsCancelled() {
 		currentPomodoro = a.newPomodoro()
 	}
-	return currentPomodoro.start()
+
+	return currentPomodoro.Start()
 }
 
 func (a *Context) FinishPomodoro() error {
@@ -42,7 +56,7 @@ func (a *Context) FinishPomodoro() error {
 	if pomodoro == nil {
 		return errors.New("there isn't a pomodoro")
 	}
-	err := pomodoro.finish()
+	err := pomodoro.Finish()
 
 	if err == nil {
 		a.finished++
@@ -56,10 +70,10 @@ func (a *Context) CancelPomodoro() error {
 	if pomodoro == nil {
 		return errors.New("there isn't a pomodoro")
 	}
-	return pomodoro.cancel()
+	return pomodoro.Cancel()
 }
 
-func (a *Context) CurrentPomodoro() *Pomodoro {
+func (a *Context) CurrentPomodoro() *model.Pomodoro {
 	l := len(a.pomodoro)
 
 	if l == 0 {
@@ -69,6 +83,6 @@ func (a *Context) CurrentPomodoro() *Pomodoro {
 	return &a.pomodoro[l-1]
 }
 
-func (a *Context) Pomodoros() []Pomodoro {
+func (a *Context) Pomodoros() []model.Pomodoro {
 	return a.pomodoro
 }

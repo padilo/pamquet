@@ -1,4 +1,4 @@
-package pomodoro
+package model
 
 import (
 	"errors"
@@ -25,7 +25,7 @@ func NewPomodoro(class Class, duration time.Duration) Pomodoro {
 	}
 }
 
-func (p *Pomodoro) start() error {
+func (p *Pomodoro) Start() error {
 	if p.completed {
 		return errors.New("pomodoro can't be started if it's already completed")
 	}
@@ -41,7 +41,7 @@ func (p *Pomodoro) start() error {
 	return nil
 }
 
-func (p *Pomodoro) finish() error {
+func (p *Pomodoro) Finish() error {
 	if !p.running {
 		return errors.New("pomodoro is not running, cannot mark as finished")
 	}
@@ -52,7 +52,7 @@ func (p *Pomodoro) finish() error {
 	return nil
 }
 
-func (p *Pomodoro) cancel() error {
+func (p *Pomodoro) Cancel() error {
 	if !p.running {
 		return errors.New("pomodoro is not running, cannot mark cancel")
 	}

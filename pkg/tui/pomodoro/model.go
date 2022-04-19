@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/padilo/pomaquet/pkg/app/pomodoro"
+	"github.com/padilo/pomaquet/pkg/storage/bbolt"
 	"github.com/padilo/pomaquet/pkg/tui/messages"
 )
 
@@ -62,7 +63,9 @@ type Model struct {
 func NewModel() Model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
-	pomodoroContext := pomodoro.Init()
+
+	storage := bbolt.NewBboltStorage()
+	pomodoroContext := pomodoro.InitDb(bbolt.NewBboltSettingsStorage(storage))
 	return Model{
 		spinner:         s,
 		help:            help.New(),
