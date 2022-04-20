@@ -14,9 +14,9 @@ func (s Settings) Time(class Class) time.Duration {
 func NewSettings() Settings {
 	return Settings{
 		DurationClassMapping: map[Class]time.Duration{
-			Work:      10 * time.Second,
-			Break:     5 * time.Second,
-			LongBreak: 7 * time.Second,
+			Work:      45 * time.Minute,
+			Break:     5 * time.Minute,
+			LongBreak: 15 * time.Minute,
 		},
 		//orderClasses: []Class{Work, Break, Work, Break, Work, Break, Work, LongBreak},
 		OrderClasses: []Class{Work, Break, LongBreak},
