@@ -37,6 +37,12 @@ func (c *Context) SetTitle(selected int, title string) {
 	c.TaskList[selected].Title = title
 }
 
+func (c *Context) SwitchTasks(i int, j int) {
+	taskI := c.TaskList[i]
+	c.TaskList[i] = c.TaskList[j]
+	c.TaskList[j] = taskI
+}
+
 func collect[T any, U any](arrayItems []T, m func(T) U) []U {
 	ret := make([]U, len(arrayItems))
 

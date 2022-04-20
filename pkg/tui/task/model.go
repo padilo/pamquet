@@ -1,6 +1,8 @@
 package task
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -15,10 +17,11 @@ type keyMap struct {
 	N     key.Binding
 	D     key.Binding
 	SPACE key.Binding
+	M     key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Up, k.Down, k.E, k.N, k.D, k.SPACE}
+	return []key.Binding{k.Up, k.Down, k.E, k.N, k.D, k.SPACE, k.M}
 }
 
 func (k keyMap) FullHelp() [][]key.Binding {
@@ -29,17 +32,18 @@ func (k keyMap) FullHelp() [][]key.Binding {
 		{k.N},
 		{k.D},
 		{k.SPACE},
+		{k.M},
 	}
 }
 
 var keys = keyMap{
 	Up: key.NewBinding(
-		key.WithKeys("up"),
-		key.WithHelp("up", "prev task"),
+		key.WithKeys("up", "k"),
+		key.WithHelp("↑/k", "prev task"),
 	),
 	Down: key.NewBinding(
-		key.WithKeys("down"),
-		key.WithHelp("down", "next task"),
+		key.WithKeys("down", "j"),
+		key.WithHelp("↓/j", "next task"),
 	),
 	E: key.NewBinding(
 		key.WithKeys("e"),
@@ -53,6 +57,10 @@ var keys = keyMap{
 		key.WithKeys("d"),
 		key.WithHelp("d", "del task"),
 	),
+	M: key.NewBinding(
+		key.WithKeys("m"),
+		key.WithHelp("m", "move task"),
+	),
 	SPACE: key.NewBinding(
 		key.WithKeys(" "),
 		key.WithHelp("space", "done task"),
@@ -65,7 +73,7 @@ const (
 	None Mode = iota
 	Create
 	Update
-	Delete
+	Move
 )
 
 type Model struct {
@@ -97,10 +105,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, m.keys.Up):
 			if m.selected > 0 {
+				if m.mode == Move {
+					m.context.SwitchTasks(m.selected, m.selected-1)
+				}
 				m.selected--
 			}
 		case key.Matches(msg, m.keys.Down):
 			if m.selected < len(m.context.TaskList)-1 {
+				if m.mode == Move {
+					m.context.SwitchTasks(m.selected, m.selected+1)
+				}
 				m.selected++
 			}
 		case key.Matches(msg, m.keys.N):
@@ -117,6 +131,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		case key.Matches(msg, m.keys.SPACE):
 			m.context.SetDone(m.selected)
+		case key.Matches(msg, m.keys.M):
+			if m.mode == Move {
+				m.mode = None
+			} else {
+				m.mode = Move
+			}
+			m.keys.E.SetEnabled(m.mode != Move)
+			m.keys.N.SetEnabled(m.mode != Move)
+			m.keys.D.SetEnabled(m.mode != Move)
+			m.keys.SPACE.SetEnabled(m.mode != Move)
+
+		default:
+			fmt.Printf("%v", msg.String())
 		}
 
 	case messages.DimensionChangeMsg:
