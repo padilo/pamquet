@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/padilo/pomaquet/pkg/pomodoro/app"
 	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
 )
 
@@ -22,7 +23,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.StartPomodoroCmd()
 
 		case key.Matches(msg, m.keys.C):
-			err := m.pomodoroContext.CancelPomodoro()
+			err := app.CancelPomodoro(m.date)
 			if err != nil {
 				panic(err)
 			}
@@ -41,11 +42,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case timer.TimeoutMsg:
 		if msg.ID == m.timer.ID() {
-			err := m.pomodoroContext.FinishPomodoro()
+			err := app.FinishPomodoro(m.date)
 			if err != nil {
 				panic(err)
 			}
-			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", m.pomodoroContext.CurrentPomodoro().Class().Icon(), m.pomodoroContext.CurrentPomodoro().Class().String()), "")
+			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", m.date.CurrentPomodoro().Class().Icon(), m.date.CurrentPomodoro().Class().String()), "")
 			if err != nil {
 				panic(err)
 			}
@@ -77,10 +78,10 @@ func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) StartPomodoroCmd() (Model, tea.Cmd) {
-	err := m.pomodoroContext.StartPomodoro()
+	err := app.StartPomodoro(m.date)
 	if err != nil {
 		panic(err)
 	}
-	m.timer = timer.NewWithInterval(m.pomodoroContext.CurrentPomodoro().Duration(), 71*time.Millisecond)
+	m.timer = timer.NewWithInterval(m.date.CurrentPomodoro().Class().Duration(), 71*time.Millisecond)
 	return m, m.timer.Init()
 }

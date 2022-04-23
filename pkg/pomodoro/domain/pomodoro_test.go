@@ -9,16 +9,20 @@ import (
 
 func TestPomodoro(t *testing.T) {
 	const duration = 10 * time.Second
+	workType := TimerType{
+		id:       Work,
+		duration: duration,
+	}
 
 	t.Run("initial state", func(t *testing.T) {
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		assert.False(t, p.IsRunning(), "tui shouldn't be running")
 		assert.False(t, p.IsCompleted(), "tui shouldn't be completed")
 	})
 
 	t.Run("when started should be running and not completed", func(t *testing.T) {
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err := p.Start()
 		assert.Nil(t, err, "unexpected error")
@@ -29,7 +33,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("when finished should be completed and not running", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Start()
 		assert.Nil(t, err, "unexpected error")
@@ -42,7 +46,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't start the same tui twice", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Start()
 		assert.Nil(t, err, "unexpected error")
@@ -52,7 +56,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't finish the same tui twice", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Start()
 		assert.Nil(t, err, "unexpected error")
@@ -64,7 +68,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't start an already finished tui", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Start()
 		assert.Nil(t, err, "unexpected error")
@@ -76,26 +80,15 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't finish a tui that is not running", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Finish()
 		assert.Error(t, err, "expected error finished a non running tui")
 	})
 
-	t.Run("should store duration", func(t *testing.T) {
-		expectedDuration := duration
-		expectedDuration2 := duration * 2
-
-		p := NewPomodoro(Work, expectedDuration)
-		assert.Equal(t, expectedDuration, p.Duration())
-
-		p = NewPomodoro(Work, expectedDuration2)
-		assert.Equal(t, expectedDuration2, p.Duration())
-	})
-
 	t.Run("you can't cancel an already finished tui", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Start()
 		assert.Nil(t, err, "unexpected error")
@@ -107,7 +100,7 @@ func TestPomodoro(t *testing.T) {
 
 	t.Run("you can't start an already cancelled tui", func(t *testing.T) {
 		var err error
-		p := NewPomodoro(Work, duration)
+		p := NewPomodoro(workType)
 
 		err = p.Start()
 		assert.Nil(t, err, "unexpected error")

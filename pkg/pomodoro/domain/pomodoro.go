@@ -10,18 +10,16 @@ type Pomodoro struct {
 	running   bool
 	startTime time.Time
 	endTime   time.Time
-	class     Class
+	timerType TimerType
 	cancelled bool
-	duration  time.Duration
 }
 
-func NewPomodoro(class Class, duration time.Duration) Pomodoro {
+func NewPomodoro(class TimerType) Pomodoro {
 	return Pomodoro{
 		completed: false,
 		running:   false,
 		cancelled: false,
-		class:     class,
-		duration:  duration,
+		timerType: class,
 	}
 }
 
@@ -72,16 +70,12 @@ func (p *Pomodoro) IsCompleted() bool {
 	return p.completed
 }
 
-func (p *Pomodoro) Duration() time.Duration {
-	return p.duration
-}
-
 func (p *Pomodoro) StartTime() time.Time {
 	return p.startTime
 }
 
-func (p Pomodoro) Class() Class {
-	return p.class
+func (p Pomodoro) Class() TimerType {
+	return p.timerType
 }
 
 func (p *Pomodoro) EndTime() time.Time {

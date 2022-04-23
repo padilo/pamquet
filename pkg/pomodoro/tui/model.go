@@ -6,9 +6,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/core/infrastructure"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app"
 	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
+	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
 )
 
 type keyMap struct {
@@ -46,28 +45,26 @@ var keys = keyMap{
 }
 
 type Model struct {
-	timer   timer.Model
-	spinner spinner.Model
-	help    help.Model
-	keys    keyMap
+	timer     timer.Model
+	spinner   spinner.Model
+	help      help.Model
+	keys      keyMap
+	height    int
+	width     int
+	dimension core.Dimension
 
-	pomodoroContext app.Context
-	height          int
-	width           int
-	dimension       core.Dimension
+	date domain.Date
 }
 
 func NewModel() Model {
 	s := spinner.New()
 	s.Spinner = spinner.MiniDot
 
-	storage := infrastructure.NewBboltStorage()
-	pomodoroContext := app.InitDb(infrastructure.NewBboltSettingsStorage(storage))
 	return Model{
-		spinner:         s,
-		help:            help.New(),
-		keys:            keys,
-		pomodoroContext: pomodoroContext,
+		spinner: s,
+		help:    help.New(),
+		keys:    keys,
+		date:    domain.Date{},
 	}
 
 }

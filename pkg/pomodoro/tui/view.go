@@ -16,7 +16,7 @@ var (
 )
 
 func (m Model) View() string {
-	pomodoroData := m.pomodoroContext.Pomodoros()
+	pomodoroData := m.date.Pomodoros()
 	pomodoroStr := make([]string, len(pomodoroData))
 
 	for i := 0; i < len(pomodoroData); i++ {

@@ -4,85 +4,59 @@ import (
 	"errors"
 
 	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
-	settings_domain "github.com/padilo/pomaquet/pkg/settings/domain"
 )
 
-type Context struct {
-	pomodoro []domain.Pomodoro
-	Settings settings_domain.Settings
-	finished int
+var repository DateRepository = NoopDateRepository{}
+
+type DateRepository interface {
+	Save(date domain.Date)
 }
 
-func (a *Context) newPomodoro() *domain.Pomodoro {
-	class := a.guessClass()
-	p := domain.NewPomodoro(class, a.Settings.Time(class))
-	a.pomodoro = append(a.pomodoro, p)
-	return a.CurrentPomodoro()
+type NoopDateRepository struct {
+	date domain.Date
 }
 
-func (a *Context) guessClass() domain.Class {
-	i := a.finished % len(a.Settings.OrderClasses)
+func (r NoopDateRepository) Save(date domain.Date) {
 
-	return a.Settings.OrderClasses[i]
 }
 
-func InitDb(settingsStorage settings_domain.SettingsRepository) Context {
-	settings := settingsStorage.Get()
+func NewPomodoro(date *domain.Date, timerType domain.TimerType) *domain.Pomodoro {
+	p := domain.NewPomodoro(timerType)
 
-	defer settingsStorage.Save(settings)
+	date.Append(p)
 
-	return Context{
-		Settings: settings,
-	}
+	repository.Save(*date)
+
+	return date.CurrentPomodoro()
 }
 
-func Init() Context {
-	return Context{
-		Settings: settings_domain.NewSettings(),
-	}
+func InitDb(givenRepository DateRepository) {
+	repository = givenRepository
 }
 
-func (a *Context) StartPomodoro() error {
-	currentPomodoro := a.CurrentPomodoro()
+func StartPomodoro(date *domain.Date) error {
+	currentPomodoro := date.CurrentPomodoro()
 	if currentPomodoro == nil || currentPomodoro.IsCompleted() || currentPomodoro.IsCancelled() {
-		currentPomodoro = a.newPomodoro()
+		// FIXME: this timertype hardcoded
+		newPomodoro := NewPomodoro(date, domain.TimerType{})
+		currentPomodoro = newPomodoro
 	}
 
 	return currentPomodoro.Start()
 }
 
-func (a *Context) FinishPomodoro() error {
-	pomodoro := a.CurrentPomodoro()
+func FinishPomodoro(date *domain.Date) error {
+	pomodoro := date.CurrentPomodoro()
 	if pomodoro == nil {
 		return errors.New("there isn't a tui")
 	}
-	err := pomodoro.Finish()
-
-	if err == nil {
-		a.finished++
-	}
-
-	return err
+	return pomodoro.Finish()
 }
 
-func (a *Context) CancelPomodoro() error {
-	pomodoro := a.CurrentPomodoro()
+func CancelPomodoro(date *domain.Date) error {
+	pomodoro := date.CurrentPomodoro()
 	if pomodoro == nil {
 		return errors.New("there isn't a tui")
 	}
 	return pomodoro.Cancel()
-}
-
-func (a *Context) CurrentPomodoro() *domain.Pomodoro {
-	l := len(a.pomodoro)
-
-	if l == 0 {
-		return nil
-	}
-
-	return &a.pomodoro[l-1]
-}
-
-func (a *Context) Pomodoros() []domain.Pomodoro {
-	return a.pomodoro
 }
