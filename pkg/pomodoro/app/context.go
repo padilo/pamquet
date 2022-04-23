@@ -4,12 +4,12 @@ import (
 	"errors"
 
 	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
-	domain2 "github.com/padilo/pomaquet/pkg/settings/domain"
+	settings_domain "github.com/padilo/pomaquet/pkg/settings/domain"
 )
 
 type Context struct {
 	pomodoro []domain.Pomodoro
-	Settings domain2.Settings
+	Settings settings_domain.Settings
 	finished int
 }
 
@@ -26,7 +26,7 @@ func (a *Context) guessClass() domain.Class {
 	return a.Settings.OrderClasses[i]
 }
 
-func InitDb(settingsStorage domain2.SettingsRepository) Context {
+func InitDb(settingsStorage settings_domain.SettingsRepository) Context {
 	settings := settingsStorage.Get()
 
 	defer settingsStorage.Save(settings)
@@ -38,7 +38,7 @@ func InitDb(settingsStorage domain2.SettingsRepository) Context {
 
 func Init() Context {
 	return Context{
-		Settings: domain2.NewSettings(),
+		Settings: settings_domain.NewSettings(),
 	}
 }
 
