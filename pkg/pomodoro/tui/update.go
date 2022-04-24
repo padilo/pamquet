@@ -22,12 +22,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.StartPomodoroCmd()
 
 		case key.Matches(msg, m.keys.C):
-			pomodoroTimer := m.workDay.CurrentTimer()
-			err := pomodoroTimer.Cancel()
-			if err != nil {
-				panic(err)
-			}
-			m.workDay.SetCurrentTimer(pomodoroTimer)
+			m.CancelPomodoro()
 
 			return m, m.timer.Toggle()
 		}
@@ -49,7 +44,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err != nil {
 				panic(err)
 			}
-			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", pomodoroTimer.Class().Icon(), pomodoroTimer.Class().String()), "")
+			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", pomodoroTimer.Type().Icon(), pomodoroTimer.Type().String()), "")
 			if err != nil {
 				panic(err)
 			}
@@ -70,6 +65,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+func (m Model) CancelPomodoro() {
+	pomodoroTimer := m.workDay.CurrentTimer()
+	err := pomodoroTimer.Cancel()
+	if err != nil {
+		panic(err)
+	}
+	m.workDay.SetCurrentTimer(pomodoroTimer)
+}
+
 func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 	if eventId == m.timer.ID() {
 		var cmd tea.Cmd
@@ -88,6 +92,6 @@ func (m Model) StartPomodoroCmd() (Model, tea.Cmd) {
 		panic(err)
 	}
 	m.workDay.SetCurrentTimer(pomodoroTimer)
-	m.timer = timer.NewWithInterval(pomodoroTimer.Class().Duration(), 71*time.Millisecond)
+	m.timer = timer.NewWithInterval(pomodoroTimer.Type().Duration(), 71*time.Millisecond)
 	return m, m.timer.Init()
 }

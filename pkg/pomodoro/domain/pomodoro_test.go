@@ -10,7 +10,7 @@ import (
 func TestPomodoro(t *testing.T) {
 	const duration = 10 * time.Second
 	workType := TimerType{
-		id:       Work,
+		id:       WorkId,
 		duration: duration,
 	}
 

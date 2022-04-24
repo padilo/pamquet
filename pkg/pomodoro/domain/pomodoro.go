@@ -74,7 +74,7 @@ func (p Pomodoro) StartTime() time.Time {
 	return p.startTime
 }
 
-func (p Pomodoro) Class() TimerType {
+func (p Pomodoro) Type() TimerType {
 	return p.timerType
 }
 

@@ -34,8 +34,8 @@ func (m Model) View() string {
 
 func (m Model) pomodoroLineView(pomodoro domain.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04:05")
-	icon := pomodoro.Class().Icon()
-	classText := styleClassText.Render(pomodoro.Class().String())
+	icon := pomodoro.Type().Icon()
+	classText := styleClassText.Render(pomodoro.Type().String())
 
 	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoro))
 }
