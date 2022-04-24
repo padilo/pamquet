@@ -2,6 +2,11 @@ package domain
 
 import "time"
 
+var TimerTypeDummy = TimerType{
+	id:       Work,
+	duration: 10 * time.Second,
+}
+
 type TimerType struct {
 	id       IdType
 	duration time.Duration

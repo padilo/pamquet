@@ -23,7 +23,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.StartPomodoroCmd()
 
 		case key.Matches(msg, m.keys.C):
-			err := app.CancelPomodoro(m.date)
+			err := app.CancelPomodoro(&m.date)
 			if err != nil {
 				panic(err)
 			}
@@ -42,7 +42,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case timer.TimeoutMsg:
 		if msg.ID == m.timer.ID() {
-			err := app.FinishPomodoro(m.date)
+			err := app.FinishPomodoro(&m.date)
 			if err != nil {
 				panic(err)
 			}
@@ -78,7 +78,7 @@ func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) StartPomodoroCmd() (Model, tea.Cmd) {
-	err := app.StartPomodoro(m.date)
+	err := app.StartPomodoro(&m.date)
 	if err != nil {
 		panic(err)
 	}

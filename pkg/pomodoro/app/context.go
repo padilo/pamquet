@@ -38,7 +38,7 @@ func StartPomodoro(date *domain.Date) error {
 	currentPomodoro := date.CurrentPomodoro()
 	if currentPomodoro == nil || currentPomodoro.IsCompleted() || currentPomodoro.IsCancelled() {
 		// FIXME: this timertype hardcoded
-		newPomodoro := NewPomodoro(date, domain.TimerType{})
+		newPomodoro := NewPomodoro(date, domain.TimerTypeDummy)
 		currentPomodoro = newPomodoro
 	}
 
