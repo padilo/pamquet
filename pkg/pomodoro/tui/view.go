@@ -16,11 +16,13 @@ var (
 )
 
 func (m Model) View() string {
-	pomodoroData := m.date.Pomodoros()
+	pomodoroData := m.workDay.Pomodoros()
 	pomodoroStr := make([]string, len(pomodoroData))
 
-	for i := 0; i < len(pomodoroData); i++ {
-		pomodoroStr[i] = m.pomodoroLineView(pomodoroData[i])
+	for i, pomodoro := range pomodoroData {
+		if pomodoro.IsRunning() || pomodoro.IsCancelled() || pomodoro.IsCompleted() {
+			pomodoroStr[i] = m.pomodoroLineView(pomodoro)
+		}
 	}
 
 	pomodoroView := stylePomodoroHistory.Render(strings.Join(pomodoroStr, ""))

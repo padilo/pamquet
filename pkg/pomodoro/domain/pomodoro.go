@@ -62,15 +62,15 @@ func (p *Pomodoro) Cancel() error {
 	return nil
 }
 
-func (p *Pomodoro) IsRunning() bool {
+func (p Pomodoro) IsRunning() bool {
 	return p.running
 }
 
-func (p *Pomodoro) IsCompleted() bool {
+func (p Pomodoro) IsCompleted() bool {
 	return p.completed
 }
 
-func (p *Pomodoro) StartTime() time.Time {
+func (p Pomodoro) StartTime() time.Time {
 	return p.startTime
 }
 
@@ -78,10 +78,10 @@ func (p Pomodoro) Class() TimerType {
 	return p.timerType
 }
 
-func (p *Pomodoro) EndTime() time.Time {
+func (p Pomodoro) EndTime() time.Time {
 	return p.endTime
 }
 
-func (p *Pomodoro) IsCancelled() bool {
+func (p Pomodoro) IsCancelled() bool {
 	return p.cancelled
 }

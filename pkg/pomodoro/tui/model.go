@@ -53,7 +53,7 @@ type Model struct {
 	width     int
 	dimension core.Dimension
 
-	date domain.Date
+	workDay domain.WorkDay
 }
 
 func NewModel() Model {
@@ -64,7 +64,7 @@ func NewModel() Model {
 		spinner: s,
 		help:    help.New(),
 		keys:    keys,
-		date:    domain.Date{},
+		workDay: domain.NewWorkDay(),
 	}
 
 }

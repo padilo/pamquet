@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app"
 	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
 )
 
@@ -23,10 +22,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.StartPomodoroCmd()
 
 		case key.Matches(msg, m.keys.C):
-			err := app.CancelPomodoro(&m.date)
+			pomodoroTimer := m.workDay.CurrentTimer()
+			err := pomodoroTimer.Cancel()
 			if err != nil {
 				panic(err)
 			}
+			m.workDay.SetCurrentTimer(pomodoroTimer)
+
 			return m, m.timer.Toggle()
 		}
 	case tea.WindowSizeMsg:
@@ -42,14 +44,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case timer.TimeoutMsg:
 		if msg.ID == m.timer.ID() {
-			err := app.FinishPomodoro(&m.date)
+			pomodoroTimer := m.workDay.CurrentTimer()
+			err := pomodoroTimer.Finish()
 			if err != nil {
 				panic(err)
 			}
-			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", m.date.CurrentPomodoro().Class().Icon(), m.date.CurrentPomodoro().Class().String()), "")
+			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", pomodoroTimer.Class().Icon(), pomodoroTimer.Class().String()), "")
 			if err != nil {
 				panic(err)
 			}
+			m.workDay.SetCurrentTimer(pomodoroTimer)
 			return m.StartPomodoroCmd()
 		}
 	case spinner.TickMsg:
@@ -78,10 +82,12 @@ func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) StartPomodoroCmd() (Model, tea.Cmd) {
-	err := app.StartPomodoro(&m.date)
+	pomodoroTimer := m.workDay.CurrentTimer()
+	err := pomodoroTimer.Start()
 	if err != nil {
 		panic(err)
 	}
-	m.timer = timer.NewWithInterval(m.date.CurrentPomodoro().Class().Duration(), 71*time.Millisecond)
+	m.workDay.SetCurrentTimer(pomodoroTimer)
+	m.timer = timer.NewWithInterval(pomodoroTimer.Class().Duration(), 71*time.Millisecond)
 	return m, m.timer.Init()
 }

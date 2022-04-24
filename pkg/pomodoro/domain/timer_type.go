@@ -2,13 +2,21 @@ package domain
 
 import "time"
 
-var TimerTypeDummy = TimerType{
-	id:       Work,
-	duration: 10 * time.Second,
+var Work = TimerType{
+	id:       WorkId,
+	duration: 5 * time.Second,
+}
+var Break = TimerType{
+	id:       BreakId,
+	duration: 1 * time.Second,
+}
+var LongBreak = TimerType{
+	id:       LongBreakId,
+	duration: 3 * time.Second,
 }
 
 type TimerType struct {
-	id       IdType
+	id       TypeId
 	duration time.Duration
 }
 
@@ -16,24 +24,24 @@ func (t TimerType) Duration() time.Duration {
 	return t.duration
 }
 
-type IdType int
+type TypeId int
 
 const (
-	Work IdType = iota
-	Break
-	LongBreak
+	WorkId TypeId = iota
+	BreakId
+	LongBreakId
 )
 
-var classesMap = map[IdType][]string{
-	Work: {
+var classesMap = map[TypeId][]string{
+	WorkId: {
 		"Work",
 		"⛏️ ",
 	},
-	Break: {
+	BreakId: {
 		"Break",
 		"☕",
 	},
-	LongBreak: {
+	LongBreakId: {
 		"Long Break",
 		"🍺",
 	},
