@@ -16,11 +16,13 @@ var (
 )
 
 func (m Model) View() string {
-	pomodoroData := m.pomodoroContext.Pomodoros()
+	pomodoroData := m.workDay.Pomodoros()
 	pomodoroStr := make([]string, len(pomodoroData))
 
-	for i := 0; i < len(pomodoroData); i++ {
-		pomodoroStr[i] = m.pomodoroLineView(pomodoroData[i])
+	for i, pomodoro := range pomodoroData {
+		if pomodoro.IsRunning() || pomodoro.IsCancelled() || pomodoro.IsCompleted() {
+			pomodoroStr[i] = m.pomodoroLineView(pomodoro)
+		}
 	}
 
 	pomodoroView := stylePomodoroHistory.Render(strings.Join(pomodoroStr, ""))
@@ -32,8 +34,8 @@ func (m Model) View() string {
 
 func (m Model) pomodoroLineView(pomodoro domain.Pomodoro) string {
 	timeStr := pomodoro.StartTime().Format("15:04:05")
-	icon := pomodoro.Class().Icon()
-	classText := styleClassText.Render(pomodoro.Class().String())
+	icon := pomodoro.Type().Icon()
+	classText := styleClassText.Render(pomodoro.Type().String())
 
 	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoro))
 }

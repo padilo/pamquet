@@ -7,22 +7,22 @@ import (
 )
 
 type Settings struct {
-	DurationClassMapping map[domain.Class]time.Duration `json:"duration-class-mapping"`
-	OrderClasses         []domain.Class                 `json:"order-classes"`
+	DurationClassMapping map[domain.TimerType]time.Duration `json:"duration-class-mapping"`
+	OrderClasses         []domain.TimerType                 `json:"order-classes"`
 }
 
-func (s Settings) Time(class domain.Class) time.Duration {
-	return s.DurationClassMapping[class]
+func (s Settings) Time(timerType domain.TimerType) time.Duration {
+	return s.DurationClassMapping[timerType]
 }
 
 func NewSettings() Settings {
 	return Settings{
-		DurationClassMapping: map[domain.Class]time.Duration{
+		DurationClassMapping: map[domain.TimerType]time.Duration{
 			domain.Work:      45 * time.Minute,
 			domain.Break:     5 * time.Minute,
 			domain.LongBreak: 15 * time.Minute,
 		},
 		//orderClasses: []Class{Work, Break, Work, Break, Work, Break, Work, LongBreak},
-		OrderClasses: []domain.Class{domain.Work, domain.Break, domain.LongBreak},
+		OrderClasses: []domain.TimerType{domain.Work, domain.Break, domain.LongBreak},
 	}
 }
