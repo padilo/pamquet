@@ -3,15 +3,58 @@ package tui
 import (
 	"testing"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTuiModel(t *testing.T) {
-	model := NewModel()
+func MsgKey(runeKey rune) tea.KeyMsg {
+	return tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{runeKey}, Alt: false}
+}
 
-	t.Run("Model should start with a Work timer", func(t *testing.T) {
+func TestTuiModel(t *testing.T) {
+	t.Run("model should start with a Work timer", func(t *testing.T) {
+		model := NewModel()
 		currentTimer := model.workDay.CurrentTimer()
 		assert.Equal(t, currentTimer.Type(), domain.Work)
 	})
+
+	t.Run("Hit key 's' should start a pomodoro", func(t *testing.T) {
+		model := NewModel()
+		assert.False(t, model.workDay.CurrentTimer().IsRunning())
+
+		modelUpdate(&model, MsgKey('s'))
+
+		assert.True(t, model.workDay.CurrentTimer().IsRunning())
+	})
+
+	t.Run("Hit key 'c' should cancel a pomodoro", func(t *testing.T) {
+		model := NewModel()
+		assert.False(t, model.workDay.CurrentTimer().IsRunning())
+
+		modelUpdate(&model, MsgKey('s'))
+		assert.True(t, model.workDay.CurrentTimer().IsRunning())
+		modelUpdate(&model, MsgKey('c'))
+		assert.False(t, model.workDay.CurrentTimer().IsRunning())
+		assert.True(t, model.workDay.CurrentTimer().IsCancelled())
+	})
+}
+
+func modelUpdate(model *Model, msg tea.Msg) {
+	var cmd tea.Cmd
+	var teaModel tea.Model
+	teaModel = model
+
+	for teaModel, cmd = teaModel.Update(msg); cmd != nil; teaModel, cmd = teaModel.Update(msg) {
+		msg = cmd()
+
+		switch cmds := msg.(type) {
+		case []tea.Cmd:
+			for _, cmd = range cmds {
+				modelUpdate(model, cmd())
+			}
+		}
+
+	}
+	*model = teaModel.(Model)
 }

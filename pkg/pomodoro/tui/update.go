@@ -65,7 +65,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) CancelPomodoro() {
+func (m *Model) CancelPomodoro() {
 	pomodoroTimer := m.workDay.CurrentTimer()
 	err := pomodoroTimer.Cancel()
 	if err != nil {
