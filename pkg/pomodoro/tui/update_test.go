@@ -38,6 +38,15 @@ func TestTuiModel(t *testing.T) {
 		assert.False(t, model.workDay.CurrentTimer().IsRunning())
 		assert.True(t, model.workDay.CurrentTimer().IsCancelled())
 	})
+
+	t.Run("view should show the pomodoro timer when hit start", func(t *testing.T) {
+		model := NewModel()
+		assert.NotContains(t, model.View(), "Work")
+
+		modelUpdate(&model, MsgKey('s'))
+
+		assert.Contains(t, model.View(), "Work")
+	})
 }
 
 func modelUpdate(model *Model, msg tea.Msg) {
