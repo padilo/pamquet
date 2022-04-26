@@ -40,3 +40,8 @@ func (d *WorkDay) SetCurrentTimer(p Pomodoro) {
 		d.pomodoros = append(d.pomodoros, NewPomodoro(Work))
 	}
 }
+
+func (d *WorkDay) NewPomodoro() Pomodoro {
+	d.pomodoros = append(d.pomodoros, NewPomodoro(Work))
+	return d.CurrentTimer()
+}

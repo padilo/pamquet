@@ -47,6 +47,23 @@ func TestTuiModel(t *testing.T) {
 
 		assert.Contains(t, model.View(), "Work")
 	})
+	t.Run("view should show when a timer is cancelled", func(t *testing.T) {
+		model := NewModel()
+		assert.NotContains(t, model.View(), cancelledIcon)
+		assert.NotContains(t, model.View(), doneIcon)
+
+		modelUpdate(&model, MsgKey('s'))
+
+		modelUpdate(&model, MsgKey('c'))
+		assert.Contains(t, model.View(), cancelledIcon)
+	})
+	t.Run("view should run a new pomodoro if last is cancelled", func(t *testing.T) {
+		model := NewModel()
+
+		modelUpdate(&model, MsgKey('s'))
+		modelUpdate(&model, MsgKey('c'))
+		modelUpdate(&model, MsgKey('s'))
+	})
 }
 
 func modelUpdate(model *Model, msg tea.Msg) {
