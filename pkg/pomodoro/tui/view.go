@@ -13,6 +13,9 @@ var (
 	styleClassText       = lipgloss.NewStyle().Width(10).Italic(true)
 	stylePomodoroHistory = lipgloss.NewStyle().Width(60).Align(lipgloss.Top)
 	styleHelp            = lipgloss.NewStyle().Align(lipgloss.Bottom)
+
+	doneIcon      = "✅ "
+	cancelledIcon = "❌ "
 )
 
 func (m Model) View() string {
@@ -47,9 +50,9 @@ func (m Model) pomodoroDescriptionView(pomodoro domain.Pomodoro) string {
 	if pomodoro.IsCompleted() || pomodoro.IsCancelled() {
 		var icon string
 		if pomodoro.IsCompleted() {
-			icon = fmt.Sprintf("✅ ")
+			icon = doneIcon
 		} else {
-			icon = fmt.Sprintf("❌ ")
+			icon = cancelledIcon
 		}
 		return fmt.Sprintf("%sended at %s", icon, pomodoro.EndTime().Format("15:04:05"))
 	}

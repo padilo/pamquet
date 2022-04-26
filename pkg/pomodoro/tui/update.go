@@ -87,10 +87,16 @@ func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 
 func (m Model) StartPomodoroCmd() (Model, tea.Cmd) {
 	pomodoroTimer := m.workDay.CurrentTimer()
+
+	if pomodoroTimer.IsCompleted() || pomodoroTimer.IsCancelled() {
+		pomodoroTimer = m.workDay.NewPomodoro()
+	}
 	err := pomodoroTimer.Start()
 	if err != nil {
+		// TODO: Think what to do in this case
 		panic(err)
 	}
+
 	m.workDay.SetCurrentTimer(pomodoroTimer)
 	m.timer = timer.NewWithInterval(pomodoroTimer.Type().Duration(), 71*time.Millisecond)
 	return m, m.timer.Init()
