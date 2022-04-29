@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
+	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
 )
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -19,7 +20,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case key.Matches(msg, m.keys.S):
-			return m.StartPomodoroCmd()
+			return m.StartPomodoroTuiCmd()
 
 		case key.Matches(msg, m.keys.C):
 			m.CancelPomodoro()
@@ -49,7 +50,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				panic(err)
 			}
 			m.workDay.SetCurrentTimer(pomodoroTimer)
-			return m.StartPomodoroCmd()
+			return m.StartPomodoroTuiCmd()
 		}
 	case spinner.TickMsg:
 		if msg.ID == m.spinner.ID() {
@@ -85,19 +86,11 @@ func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Model) StartPomodoroCmd() (Model, tea.Cmd) {
-	pomodoroTimer := m.workDay.CurrentTimer()
-
-	if pomodoroTimer.IsCompleted() || pomodoroTimer.IsCancelled() {
-		pomodoroTimer = m.workDay.NewPomodoro()
-	}
-	err := pomodoroTimer.Start()
+func (m Model) StartPomodoroTuiCmd() (Model, tea.Cmd) {
+	err := domain.StartPomodoro(&m.workDay)
 	if err != nil {
-		// TODO: Think what to do in this case
-		panic(err)
+		return m, nil
 	}
-
-	m.workDay.SetCurrentTimer(pomodoroTimer)
-	m.timer = timer.NewWithInterval(pomodoroTimer.Type().Duration(), 71*time.Millisecond)
+	m.timer = timer.NewWithInterval(m.workDay.CurrentTimer().Type().Duration(), 71*time.Millisecond)
 	return m, m.timer.Init()
 }
