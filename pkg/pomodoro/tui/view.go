@@ -16,6 +16,7 @@ var (
 
 	doneIcon      = "✅ "
 	cancelledIcon = "❌ "
+	timerIcon     = "⏱️"
 )
 
 func (m Model) View() string {
@@ -64,9 +65,10 @@ func (m Model) pomodoroDescriptionView(pomodoro domain.Pomodoro) string {
 
 	spinnerStr := m.spinner.View()
 
-	return fmt.Sprintf("%s  ⏱️  %02d:%02d.%03d",
+	return fmt.Sprintf("%s  %s  %02d:%02d.%03d",
 		//class.go,
 		spinnerStr,
+		timerIcon,
 		min/time.Minute,
 		sec/time.Second,
 		ms/time.Millisecond,
