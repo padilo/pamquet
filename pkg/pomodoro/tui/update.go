@@ -33,10 +33,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case timer.StartStopMsg:
-		return m.UpdateTimerCmd(msg.ID, msg)
+		return m.UpdateTimerTuiCmd(msg.ID, msg)
 
 	case timer.TickMsg:
-		return m.UpdateTimerCmd(msg.ID, msg)
+		return m.UpdateTimerTuiCmd(msg.ID, msg)
 
 	case timer.TimeoutMsg:
 		if msg.ID == m.timer.ID() {
@@ -75,7 +75,7 @@ func (m *Model) CancelPomodoro() {
 	m.workDay.SetCurrentTimer(pomodoroTimer)
 }
 
-func (m Model) UpdateTimerCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
+func (m Model) UpdateTimerTuiCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 	if eventId == m.timer.ID() {
 		var cmd tea.Cmd
 		m.timer, cmd = m.timer.Update(msg)

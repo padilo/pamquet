@@ -19,7 +19,7 @@ func TestTuiModel(t *testing.T) {
 		assert.Equal(t, currentTimer.Type(), domain.Work)
 	})
 
-	t.Run("Hit key 's' should start a pomodoro", func(t *testing.T) {
+	t.Run("Hit key 's' should start a pomodoro timer", func(t *testing.T) {
 		model := NewModel()
 		assert.False(t, model.workDay.CurrentTimer().IsRunning())
 
@@ -28,7 +28,7 @@ func TestTuiModel(t *testing.T) {
 		assert.True(t, model.workDay.CurrentTimer().IsRunning())
 	})
 
-	t.Run("Hit key 'c' should cancel a pomodoro", func(t *testing.T) {
+	t.Run("Hit key 'c' should cancel a pomodoro timer", func(t *testing.T) {
 		model := NewModel()
 		assert.False(t, model.workDay.CurrentTimer().IsRunning())
 
@@ -58,7 +58,7 @@ func TestTuiModel(t *testing.T) {
 		assert.Contains(t, model.View(), cancelledIcon)
 		assert.NotContains(t, model.View(), timerIcon)
 	})
-	t.Run("view should run a new pomodoro if last is cancelled", func(t *testing.T) {
+	t.Run("view should run a new pomodoro timer if last is cancelled", func(t *testing.T) {
 		model := NewModel()
 		assert.NotContains(t, model.View(), cancelledIcon)
 		assert.NotContains(t, model.View(), timerIcon)

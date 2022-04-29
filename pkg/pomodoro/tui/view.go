@@ -20,42 +20,42 @@ var (
 )
 
 func (m Model) View() string {
-	pomodoroData := m.workDay.Pomodoros()
-	pomodoroStr := make([]string, len(pomodoroData))
+	pomodoroTimerData := m.workDay.PomodoroTimers()
+	pomodoroTimerStr := make([]string, len(pomodoroTimerData))
 
-	for i, pomodoro := range pomodoroData {
-		if pomodoro.IsRunning() || pomodoro.IsCancelled() || pomodoro.IsCompleted() {
-			pomodoroStr[i] = m.pomodoroLineView(pomodoro)
+	for i, pomodoroTimer := range pomodoroTimerData {
+		if pomodoroTimer.IsRunning() || pomodoroTimer.IsCancelled() || pomodoroTimer.IsCompleted() {
+			pomodoroTimerStr[i] = m.pomodoroLineView(pomodoroTimer)
 		}
 	}
 
-	pomodoroView := stylePomodoroHistory.Render(strings.Join(pomodoroStr, ""))
+	pomodoroView := stylePomodoroHistory.Render(strings.Join(pomodoroTimerStr, ""))
 	helpView := styleHelp.Render(m.help.View(m.keys))
 	pomodoroWindow := lipgloss.JoinVertical(lipgloss.Left, pomodoroView, helpView)
 
 	return lipgloss.Place(m.dimension.Width(), m.dimension.Height(), lipgloss.Left, lipgloss.Top, pomodoroWindow)
 }
 
-func (m Model) pomodoroLineView(pomodoro domain.Pomodoro) string {
-	timeStr := pomodoro.StartTime().Format("15:04:05")
-	icon := pomodoro.Type().Icon()
-	classText := styleClassText.Render(pomodoro.Type().String())
+func (m Model) pomodoroLineView(pomodoroTimer domain.PomodoroTimer) string {
+	timeStr := pomodoroTimer.StartTime().Format("15:04:05")
+	icon := pomodoroTimer.Type().Icon()
+	classText := styleClassText.Render(pomodoroTimer.Type().String())
 
-	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoro))
+	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoroTimer))
 }
 
-func (m Model) pomodoroDescriptionView(pomodoro domain.Pomodoro) string {
+func (m Model) pomodoroDescriptionView(pomodoroTimer domain.PomodoroTimer) string {
 	var min time.Duration
 	var sec time.Duration
 
-	if pomodoro.IsCompleted() || pomodoro.IsCancelled() {
+	if pomodoroTimer.IsCompleted() || pomodoroTimer.IsCancelled() {
 		var icon string
-		if pomodoro.IsCompleted() {
+		if pomodoroTimer.IsCompleted() {
 			icon = doneIcon
 		} else {
 			icon = cancelledIcon
 		}
-		return fmt.Sprintf("%sended at %s", icon, pomodoro.EndTime().Format("15:04:05"))
+		return fmt.Sprintf("%sended at %s", icon, pomodoroTimer.EndTime().Format("15:04:05"))
 	}
 
 	t := m.timer.Timeout

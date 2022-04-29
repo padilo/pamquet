@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Pomodoro struct {
+type PomodoroTimer struct {
 	completed bool
 	running   bool
 	startTime time.Time
@@ -14,8 +14,8 @@ type Pomodoro struct {
 	cancelled bool
 }
 
-func NewPomodoro(class TimerType) Pomodoro {
-	return Pomodoro{
+func NewPomodoroTimer(class TimerType) PomodoroTimer {
+	return PomodoroTimer{
 		completed: false,
 		running:   false,
 		cancelled: false,
@@ -23,7 +23,7 @@ func NewPomodoro(class TimerType) Pomodoro {
 	}
 }
 
-func (p *Pomodoro) Start() error {
+func (p *PomodoroTimer) Start() error {
 	if p.completed {
 		return errors.New("tui can't be started if it's already completed")
 	}
@@ -39,7 +39,7 @@ func (p *Pomodoro) Start() error {
 	return nil
 }
 
-func (p *Pomodoro) Finish() error {
+func (p *PomodoroTimer) Finish() error {
 	if !p.running {
 		return errors.New("tui is not running, cannot mark as finished")
 	}
@@ -50,7 +50,7 @@ func (p *Pomodoro) Finish() error {
 	return nil
 }
 
-func (p *Pomodoro) Cancel() error {
+func (p *PomodoroTimer) Cancel() error {
 	if !p.running {
 		return errors.New("tui is not running, cannot mark cancel")
 	}
@@ -62,26 +62,26 @@ func (p *Pomodoro) Cancel() error {
 	return nil
 }
 
-func (p Pomodoro) IsRunning() bool {
+func (p PomodoroTimer) IsRunning() bool {
 	return p.running
 }
 
-func (p Pomodoro) IsCompleted() bool {
+func (p PomodoroTimer) IsCompleted() bool {
 	return p.completed
 }
 
-func (p Pomodoro) StartTime() time.Time {
+func (p PomodoroTimer) StartTime() time.Time {
 	return p.startTime
 }
 
-func (p Pomodoro) Type() TimerType {
+func (p PomodoroTimer) Type() TimerType {
 	return p.timerType
 }
 
-func (p Pomodoro) EndTime() time.Time {
+func (p PomodoroTimer) EndTime() time.Time {
 	return p.endTime
 }
 
-func (p Pomodoro) IsCancelled() bool {
+func (p PomodoroTimer) IsCancelled() bool {
 	return p.cancelled
 }
