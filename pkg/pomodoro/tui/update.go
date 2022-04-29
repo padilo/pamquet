@@ -92,5 +92,6 @@ func (m Model) StartPomodoroTuiCmd() (Model, tea.Cmd) {
 		return m, nil
 	}
 	m.timer = timer.NewWithInterval(m.workDay.CurrentTimer().Type().Duration(), 71*time.Millisecond)
+
 	return m, m.timer.Init()
 }
