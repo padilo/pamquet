@@ -10,12 +10,7 @@ type Context struct {
 
 func Init() Context {
 	return Context{
-		TaskList: domain.TaskList{
-			domain.Task{Title: "test1"},
-			domain.Task{Title: "test2", Done: true},
-			domain.Task{Title: "test3"},
-			domain.Task{Title: "test4"},
-		},
+		TaskList: domain.TaskList{},
 	}
 }
 
