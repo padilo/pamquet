@@ -25,27 +25,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ScreenSize: dim.Screen,
 		}
 		var cmd tea.Cmd
-		m.crudModel, cmd = m.crudModel.Update(leftMsg)
-		cmds = append(cmds, cmd)
 		m.taskModel, cmd = m.taskModel.Update(leftMsg)
 		cmds = append(cmds, cmd)
 		m.pomodoroModel, cmd = m.pomodoroModel.Update(rightMsg)
-		cmds = append(cmds, cmd)
-
-	case core.SwitchToTaskCrudMsg:
-		m.leftWindow = CrudTask
-
-	case core.SwitchToTaskMsg:
-		m.leftWindow = Task
-
-	case core.CrudOkMsg, core.CrudCancelMsg:
-		var cmd tea.Cmd
-		m.taskModel, cmd = m.taskModel.Update(msg)
-		cmds = append(cmds, cmd)
-
-	case core.SetTaskMsg:
-		var cmd tea.Cmd
-		m.crudModel, cmd = m.crudModel.Update(msg)
 		cmds = append(cmds, cmd)
 
 	default:
@@ -75,8 +57,6 @@ func (m *model) updateLeft(msg tea.Msg) tea.Cmd {
 	switch m.leftWindow {
 	case Task:
 		m.taskModel, cmd = m.taskModel.Update(msg)
-	case CrudTask:
-		m.crudModel, cmd = m.crudModel.Update(msg)
 	}
 	return cmd
 }
@@ -85,8 +65,6 @@ func (m model) getLeftModel() tea.Model {
 	switch m.leftWindow {
 	case Task:
 		return m.taskModel
-	case CrudTask:
-		return m.crudModel
 	}
 
 	return nil

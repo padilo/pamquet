@@ -6,6 +6,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
 	"github.com/padilo/pomaquet/pkg/task/app"
+	"github.com/padilo/pomaquet/pkg/task/tui/crud"
 )
 
 type keyMap struct {
@@ -85,15 +86,17 @@ type Model struct {
 	help      help.Model
 	keys      keyMap
 	mode      Mode
+	crudModel crud.Model
 }
 
 func NewModel() Model {
 	return Model{
-		context:  app.Init(),
-		selected: 0,
-		keys:     keys,
-		help:     help.New(),
-		mode:     None,
+		context:   app.Init(),
+		selected:  0,
+		keys:      keys,
+		help:      help.New(),
+		mode:      None,
+		crudModel: crud.NewModel(),
 	}
 }
 

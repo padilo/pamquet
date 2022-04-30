@@ -28,11 +28,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":
-			return m, tea.Batch(core.CrudCancel, core.SwitchToTask)
+			return m, core.CrudCancel
 		case "enter":
 			m.task.Title = m.textInput.Value()
 			m.textInput.Reset()
-			return m, tea.Batch(core.CrudOk(m.task), core.SwitchToTask)
+			return m, core.CrudOk(m.task)
 		}
 	case core.DimensionChangeMsg:
 		m.dimension = msg.Dimension

@@ -6,9 +6,33 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
+	"github.com/padilo/pomaquet/pkg/task/tui/crud"
 )
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if m.mode == Update || m.mode == Create {
+		switch msg := msg.(type) {
+		case core.CrudCancelMsg:
+			m.mode = None
+		case core.CrudOkMsg:
+			switch m.mode {
+			case Create:
+				m.context.AddTask(msg.Task.Title)
+			case Update:
+				m.context.SetTitle(m.selected, msg.Task.Title)
+			default:
+				// TODO: better error control
+				println("WTF")
+			}
+			m.mode = None
+		default:
+			crudModel, cmd := m.crudModel.Update(msg)
+			m.crudModel = crudModel.(crud.Model)
+			return m, cmd
+		}
+
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
@@ -28,7 +52,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case key.Matches(msg, m.keys.N):
 			m.mode = Create
-			return m, core.SwitchToTaskCrud
+			m.crudModel = crud.NewModel()
+			return m, m.crudModel.Init()
 		case key.Matches(msg, m.keys.E):
 			m.mode = Update
 			return m, tea.Batch(core.SwitchToTaskCrud, core.SetTask(m.context.TaskList[m.selected]))
@@ -54,23 +79,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			fmt.Printf("%v", msg.String())
 		}
-
-	case core.DimensionChangeMsg:
-		m.dimension = msg.Dimension
-	case core.CrudCancelMsg:
-		m.mode = None
-	case core.CrudOkMsg:
-		switch m.mode {
-		case Create:
-			m.context.AddTask(msg.Task.Title)
-		case Update:
-			m.context.SetTitle(m.selected, msg.Task.Title)
-
-		default:
-			// TODO: better error control
-			println("WTF")
-		}
-		m.mode = None
+		//m.mode = None
 	}
+	// case core.SetTaskMsg:
+	// 	var cmd tea.Cmd
+	// 	m.crudModel, cmd = m.crudModel.Update(msg)
+	// 	return m, cmd
+	// }
 	return m, nil
 }
