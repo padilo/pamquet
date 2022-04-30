@@ -15,6 +15,10 @@ var (
 )
 
 func (m Model) View() string {
+	if m.mode == Create || m.mode == Update {
+		return m.crudModel.View()
+	}
+
 	var taskLines []string
 
 	taskLines = make([]string, len(m.context.TaskList))
