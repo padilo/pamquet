@@ -25,7 +25,7 @@ func ModelUpdate[M tea.Model](model *M, msg tea.Msg) {
 	var teaModel tea.Model
 	teaModel = *model
 
-	for teaModel, cmd = (*model).Update(msg); cmd != nil; teaModel, cmd = teaModel.Update(msg) {
+	for teaModel, cmd = teaModel.Update(msg); cmd != nil; teaModel, cmd = teaModel.Update(msg) {
 		msg = cmd()
 
 		if shouldBeIgnored(msg) {
