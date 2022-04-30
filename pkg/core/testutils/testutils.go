@@ -1,9 +1,9 @@
 package testutils
 
 import (
+	"reflect"
 	"regexp"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -11,8 +11,13 @@ func MsgKey(runeKey rune) tea.KeyMsg {
 	return tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{runeKey}, Alt: false}
 }
 
-var ignoredMessages = []tea.Msg{
-	textinput.Blink(),
+func MsgKeyByType(keyType tea.KeyType) tea.KeyMsg {
+	return tea.KeyMsg{Type: keyType, Runes: []rune{}, Alt: false}
+}
+
+var ignoredMessages = []string{
+	"textinput.initialBlinkMsg",
+	"textinput.blinkMsg",
 }
 
 func ModelUpdate[M tea.Model](model *M, msg tea.Msg) {
@@ -39,8 +44,10 @@ func ModelUpdate[M tea.Model](model *M, msg tea.Msg) {
 }
 
 func shouldBeIgnored(msg tea.Msg) bool {
+	msgTypeStr := reflect.TypeOf(msg).String()
+
 	for _, e := range ignoredMessages {
-		if e == msg {
+		if e == msgTypeStr {
 			return true
 		}
 	}

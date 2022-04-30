@@ -24,6 +24,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				// TODO: better error control
 				println("WTF")
 			}
+			m.mode = None
 		default:
 			crudModel, cmd := m.crudModel.Update(msg)
 			m.crudModel = crudModel.(crud.Model)
