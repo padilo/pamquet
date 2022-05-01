@@ -11,7 +11,9 @@ var (
 	styleSelectedTask = lipgloss.NewStyle().Background(lipgloss.Color("5"))
 	styleCheckedTask  = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
 
-	styleHelp = lipgloss.NewStyle().Align(lipgloss.Bottom)
+	styleHelp       = lipgloss.NewStyle().Align(lipgloss.Bottom)
+	taskDoneIcon    = "✓"
+	taskPendingIcon = " "
 )
 
 func (m Model) View() string {
@@ -19,11 +21,9 @@ func (m Model) View() string {
 		return m.crudModel.View()
 	}
 
-	var taskLines []string
-
-	taskLines = make([]string, len(m.context.TaskList))
+	taskLines := make([]string, len(m.context.TaskList))
 	for i, t := range m.context.TaskList {
-		checked := " "
+		checked := taskPendingIcon
 		var style lipgloss.Style
 
 		if i == m.selected {
@@ -32,7 +32,7 @@ func (m Model) View() string {
 			style = styleTask
 		}
 		if t.Done {
-			checked = "✓"
+			checked = taskDoneIcon
 			style = style.Copy().Strikethrough(true)
 		}
 
