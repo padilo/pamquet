@@ -18,6 +18,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			switch m.mode {
 			case Create:
 				m.context.AddTask(msg.Task.Title)
+				m.selected = len(m.context.TaskList) - 1
+				if m.selected > -1 {
+					setEnableTaskSelectedKeys(&m.keys, true)
+				}
 			case Update:
 				m.context.SetTitle(m.selected, msg.Task.Title)
 			default:
@@ -87,4 +91,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// 	return m, cmd
 	// }
 	return m, nil
+}
+
+func setEnableTaskSelectedKeys(key *keyMap, state bool) {
+	key.D.SetEnabled(state)
+	key.E.SetEnabled(state)
+	key.M.SetEnabled(state)
+	key.SPACE.SetEnabled(state)
 }

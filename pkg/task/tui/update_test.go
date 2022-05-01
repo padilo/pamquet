@@ -42,4 +42,24 @@ func TestTuiModel(t *testing.T) {
 		assert.Contains(t, testutils.ToPlainText(model.View()), "]")
 	})
 
+	t.Run("should be able to mark tasks as done", func(t *testing.T) {
+		model := NewModel()
+
+		testutils.ModelUpdate(&model, testutils.MsgKey('n'))
+
+		assert.Contains(t, testutils.ToPlainText(model.View()), "Title")
+		for _, c := range "my task" {
+			testutils.ModelUpdate(&model, testutils.MsgKey(c))
+		}
+		testutils.ModelUpdate(&model, testutils.MsgKeyByType(tea.KeyEnter))
+		assert.Contains(t, testutils.ToPlainText(model.View()), "my task")
+		assert.Contains(t, model.View(), "["+taskPendingIcon+"]")
+
+		testutils.ModelUpdate(&model, testutils.MsgKey(' '))
+		assert.Contains(t, model.View(), "["+taskDoneIcon+"]")
+		assert.Contains(t, model.View(), styleSelectedTask.Copy().Strikethrough(true).Render("my task"))
+
+		testutils.ModelUpdate(&model, testutils.MsgKey(' '))
+		assert.Contains(t, model.View(), "["+taskPendingIcon+"]")
+	})
 }
