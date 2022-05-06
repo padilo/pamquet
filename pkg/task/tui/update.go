@@ -60,7 +60,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.crudModel.Init()
 		case key.Matches(msg, m.keys.E):
 			m.mode = Update
-			return m, tea.Batch(core.SwitchToTaskCrud, core.SetTask(m.context.TaskList[m.selected]))
+			return m, core.SetTask(m.context.TaskList[m.selected])
 		case key.Matches(msg, m.keys.D):
 			m.context.RemoveTask(m.selected)
 			if m.selected+1 > len(m.context.TaskList) {
@@ -83,13 +83,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		default:
 			fmt.Printf("%v", msg.String())
 		}
-		//m.mode = None
 	}
-	// case core.SetTaskMsg:
-	// 	var cmd tea.Cmd
-	// 	m.crudModel, cmd = m.crudModel.Update(msg)
-	// 	return m, cmd
-	// }
+
 	return m, nil
 }
 

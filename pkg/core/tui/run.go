@@ -5,12 +5,12 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/core/tui/window"
+	"github.com/padilo/pomaquet/pkg/task/tui"
 )
 
 func Run() {
 	p := tea.NewProgram(
-		window.NewModel(),
+		tui.NewModel(),
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(),
 	)
