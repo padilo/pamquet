@@ -32,13 +32,12 @@ func ModelUpdate[M tea.Model](model *M, msg tea.Msg) {
 			break
 		}
 
-		switch cmds := msg.(type) {
-		case []tea.Cmd:
+		cmds, ok := msg.([]tea.Cmd)
+		if ok {
 			for _, cmd = range cmds {
 				ModelUpdate(model, cmd())
 			}
 		}
-
 	}
 	*model = teaModel.(M)
 }
