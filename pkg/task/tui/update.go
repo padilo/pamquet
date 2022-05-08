@@ -5,7 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
+	"github.com/padilo/pomaquet/pkg/task/core"
 	"github.com/padilo/pomaquet/pkg/task/tui/crud"
 )
 
@@ -17,13 +17,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case core.CrudOkMsg:
 			switch m.mode {
 			case Create:
-				m.context.AddTask(msg.Task.Title)
-				m.selected = len(m.context.TaskList) - 1
+				m.state.AddTask(msg.Task.Title)
+				m.selected = len(m.state.TaskList()) - 1
 				if m.selected > -1 {
 					setEnableTaskSelectedKeys(&m.keys, true)
 				}
 			case Update:
-				m.context.SetTitle(m.selected, msg.Task.Title)
+				m.state.SetTitle(m.selected, msg.Task.Title)
 			default:
 				// TODO: better error control
 				println("WTF")
@@ -43,14 +43,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Up):
 			if m.selected > 0 {
 				if m.mode == Move {
-					m.context.SwitchTasks(m.selected, m.selected-1)
+					m.state.SwitchTasks(m.selected, m.selected-1)
 				}
 				m.selected--
 			}
 		case key.Matches(msg, m.keys.Down):
-			if m.selected < len(m.context.TaskList)-1 {
+			if m.selected < len(m.state.TaskList())-1 {
 				if m.mode == Move {
-					m.context.SwitchTasks(m.selected, m.selected+1)
+					m.state.SwitchTasks(m.selected, m.selected+1)
 				}
 				m.selected++
 			}
@@ -60,15 +60,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.crudModel.Init()
 		case key.Matches(msg, m.keys.E):
 			m.mode = Update
-			return m, core.SetTask(m.context.TaskList[m.selected])
+			return m, core.SetTask(m.state.TaskList()[m.selected])
 		case key.Matches(msg, m.keys.D):
-			m.context.RemoveTask(m.selected)
-			if m.selected+1 > len(m.context.TaskList) {
+			m.state.RemoveTask(m.selected)
+			if m.selected+1 > len(m.state.TaskList()) {
 				m.selected--
 			}
 			return m, nil
 		case key.Matches(msg, m.keys.SPACE):
-			m.context.SetDone(m.selected)
+			m.state.SetDone(m.selected)
 		case key.Matches(msg, m.keys.M):
 			if m.mode == Move {
 				m.mode = None

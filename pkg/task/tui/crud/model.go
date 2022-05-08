@@ -4,13 +4,14 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
+	"github.com/padilo/pomaquet/pkg/infra"
+	"github.com/padilo/pomaquet/pkg/task/core"
 	"github.com/padilo/pomaquet/pkg/task/domain"
 )
 
 type Model struct {
 	task      domain.Task
-	dimension core.Dimension
+	dimension infra.Dimension
 	textInput textinput.Model
 }
 
@@ -34,7 +35,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.textInput.Reset()
 			return m, core.CrudOk(m.task)
 		}
-	case core.DimensionChangeMsg:
+	case infra.DimensionChangeMsg:
 		m.dimension = msg.Dimension
 	case core.SetTaskMsg:
 		m.textInput.SetValue(msg.Task.Title)

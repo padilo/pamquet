@@ -1,6 +1,6 @@
-package domain
+package domain_pomodoro
 
-func StartPomodoro(w *WorkDay) error {
+func StartPomodoro(w *PomodoroState) error {
 	pomodoroTimer := w.CurrentTimer()
 
 	if pomodoroTimer.IsCompleted() || pomodoroTimer.IsCancelled() {

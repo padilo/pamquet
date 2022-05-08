@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/padilo/pomaquet/pkg/core/tui"
+	root "github.com/padilo/pomaquet/pkg"
 )
 
 func main() {
-	tui.Run()
+	root.Run()
 }

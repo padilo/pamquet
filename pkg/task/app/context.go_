@@ -3,7 +3,7 @@ package app
 import (
 	"github.com/padilo/pomaquet/pkg/task/domain"
 )
-
+/*
 type Context struct {
 	TaskList domain.TaskList
 }
@@ -51,3 +51,4 @@ func collect[T any, U any](arrayItems []T, m func(T) U) []U {
 
 	return ret
 }
+*/

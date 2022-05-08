@@ -1,4 +1,4 @@
-package tui
+package tui_pomodoro
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
+	domain_pomodoro "github.com/padilo/pomaquet/pkg/pomodoro/domain"
 )
 
 var (
@@ -36,7 +36,7 @@ func (m Model) View() string {
 	return lipgloss.Place(m.dimension.Width(), m.dimension.Height(), lipgloss.Left, lipgloss.Top, pomodoroWindow)
 }
 
-func (m Model) pomodoroLineView(pomodoroTimer domain.PomodoroTimer) string {
+func (m Model) pomodoroLineView(pomodoroTimer domain_pomodoro.PomodoroTimer) string {
 	timeStr := pomodoroTimer.StartTime().Format("15:04:05")
 	icon := pomodoroTimer.Type().Icon()
 	classText := styleClassText.Render(pomodoroTimer.Type().String())
@@ -44,7 +44,7 @@ func (m Model) pomodoroLineView(pomodoroTimer domain.PomodoroTimer) string {
 	return fmt.Sprintf("%v %v[%12s] - %v\n", timeStr, icon, styleClassText.Render(classText), m.pomodoroDescriptionView(pomodoroTimer))
 }
 
-func (m Model) pomodoroDescriptionView(pomodoroTimer domain.PomodoroTimer) string {
+func (m Model) pomodoroDescriptionView(pomodoroTimer domain_pomodoro.PomodoroTimer) string {
 	var min time.Duration
 	var sec time.Duration
 

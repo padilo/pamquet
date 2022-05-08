@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/core/testutils"
+	"github.com/padilo/pomaquet/pkg/testutils"
 	"github.com/stretchr/testify/assert"
 )
 

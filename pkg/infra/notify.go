@@ -1,4 +1,4 @@
-package tui
+package infra
 
 import (
 	"os/exec"

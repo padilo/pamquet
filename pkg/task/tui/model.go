@@ -4,8 +4,8 @@ import (
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
-	"github.com/padilo/pomaquet/pkg/task/app"
+	"github.com/padilo/pomaquet/pkg/infra"
+	"github.com/padilo/pomaquet/pkg/task/domain"
 	"github.com/padilo/pomaquet/pkg/task/tui/crud"
 )
 
@@ -80,9 +80,9 @@ const (
 )
 
 type Model struct {
-	context   app.Context
+	state     domain.TaskState
 	selected  int
-	dimension core.Dimension
+	dimension infra.Dimension
 	help      help.Model
 	keys      keyMap
 	mode      Mode
@@ -91,7 +91,7 @@ type Model struct {
 
 func NewModel() Model {
 	return Model{
-		context:   app.Init(),
+		state:     domain.InitState(),
 		selected:  0,
 		keys:      keys,
 		help:      help.New(),

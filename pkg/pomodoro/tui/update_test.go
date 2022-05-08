@@ -1,10 +1,10 @@
-package tui
+package tui_pomodoro
 
 import (
 	"testing"
 
-	"github.com/padilo/pomaquet/pkg/core/testutils"
-	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
+	domain_pomodoro "github.com/padilo/pomaquet/pkg/pomodoro/domain"
+	"github.com/padilo/pomaquet/pkg/testutils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,7 +12,7 @@ func TestTuiModel(t *testing.T) {
 	t.Run("model should start with a Work timer", func(t *testing.T) {
 		model := NewModel()
 		currentTimer := model.workDay.CurrentTimer()
-		assert.Equal(t, currentTimer.Type(), domain.Work)
+		assert.Equal(t, currentTimer.Type(), domain_pomodoro.Work)
 	})
 
 	t.Run("Hit key 's' should start a pomodoro timer", func(t *testing.T) {

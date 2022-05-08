@@ -2,7 +2,7 @@ package window
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
+	"github.com/padilo/pomaquet/pkg/infra"
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -16,11 +16,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		cmds = m.updateModels(msg)
 
-		leftMsg := core.DimensionChangeMsg{
+		leftMsg := infra.DimensionChangeMsg{
 			Dimension:  dim.Left,
 			ScreenSize: dim.Screen,
 		}
-		rightMsg := core.DimensionChangeMsg{
+		rightMsg := infra.DimensionChangeMsg{
 			Dimension:  dim.Right,
 			ScreenSize: dim.Screen,
 		}
@@ -70,21 +70,21 @@ func (m model) getLeftModel() tea.Model {
 	return nil
 }
 
-func (m *model) getDimensions() core.Dimensions {
-	return core.Dimensions{
-		Left: core.Dimension{
+func (m *model) getDimensions() infra.Dimensions {
+	return infra.Dimensions{
+		Left: infra.Dimension{
 			Top:    0,
 			Left:   0,
 			Right:  m.width/2 - 1,
 			Bottom: m.height - 1,
 		},
-		Right: core.Dimension{
+		Right: infra.Dimension{
 			Top:    0,
 			Left:   m.width / 2,
 			Right:  m.width - 1,
 			Bottom: m.height - 1,
 		},
-		Screen: core.Dimension{
+		Screen: infra.Dimension{
 			Top:    0,
 			Left:   0,
 			Right:  m.width,

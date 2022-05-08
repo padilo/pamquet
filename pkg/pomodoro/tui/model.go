@@ -1,4 +1,4 @@
-package tui
+package tui_pomodoro
 
 import (
 	"github.com/charmbracelet/bubbles/help"
@@ -6,8 +6,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
-	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
+	"github.com/padilo/pomaquet/pkg/infra"
+	domain_pomodoro "github.com/padilo/pomaquet/pkg/pomodoro/domain"
 )
 
 type keyMap struct {
@@ -51,9 +51,9 @@ type Model struct {
 	keys      keyMap
 	height    int
 	width     int
-	dimension core.Dimension
+	dimension infra.Dimension
 
-	workDay domain.WorkDay
+	workDay domain_pomodoro.PomodoroState
 }
 
 func NewModel() Model {
@@ -64,7 +64,7 @@ func NewModel() Model {
 		spinner: s,
 		help:    help.New(),
 		keys:    keys,
-		workDay: domain.NewWorkDay(),
+		workDay: domain_pomodoro.NewPomodoroState(),
 	}
 
 }

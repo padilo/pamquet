@@ -1,4 +1,4 @@
-package domain
+package domain_pomodoro
 
 type MsgError struct {
 	Err error

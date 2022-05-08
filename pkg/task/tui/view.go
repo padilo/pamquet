@@ -21,8 +21,8 @@ func (m Model) View() string {
 		return m.crudModel.View()
 	}
 
-	taskLines := make([]string, len(m.context.TaskList))
-	for i, t := range m.context.TaskList {
+	taskLines := make([]string, len(m.state.TaskList()))
+	for i, t := range m.state.TaskList() {
 		checked := taskPendingIcon
 		var style lipgloss.Style
 

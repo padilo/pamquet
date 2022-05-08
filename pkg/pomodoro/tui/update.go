@@ -1,4 +1,4 @@
-package tui
+package tui_pomodoro
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/timer"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/padilo/pomaquet/pkg/pomodoro/app/core"
-	"github.com/padilo/pomaquet/pkg/pomodoro/domain"
+	"github.com/padilo/pomaquet/pkg/infra"
+	domain_pomodoro "github.com/padilo/pomaquet/pkg/pomodoro/domain"
 )
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -45,7 +45,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err != nil {
 				panic(err)
 			}
-			err = Notify(fmt.Sprintf("%s Pomodoro timer %s finished", pomodoroTimer.Type().Icon(), pomodoroTimer.Type().String()), "")
+			err = infra.Notify(fmt.Sprintf("%s Pomodoro timer %s finished", pomodoroTimer.Type().Icon(), pomodoroTimer.Type().String()), "")
 			if err != nil {
 				panic(err)
 			}
@@ -59,7 +59,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 
-	case core.DimensionChangeMsg:
+	case infra.DimensionChangeMsg:
 		m.dimension = msg.Dimension
 	}
 
@@ -87,7 +87,7 @@ func (m Model) UpdateTimerTuiCmd(eventId int, msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m Model) StartPomodoroTuiCmd() (Model, tea.Cmd) {
-	err := domain.StartPomodoro(&m.workDay)
+	err := domain_pomodoro.StartPomodoro(&m.workDay)
 	if err != nil {
 		return m, nil
 	}
